@@ -6,33 +6,34 @@ class DbContext:
 	def __init__(self, db_path):
 		self.db_path = db_path
 
-	def select_by_numbers(self, number_list):
+	def select_by_numbers(self, number_list, order_by):
+		predicate = self.make_predicate("number", number_list, True)
+		return self.select(predicate, order_by)
+
+	def select_by_category(self, category_list, order_by):
+		predicate = self.make_predicate("cat_name", category_list, True)
+		return self.select(predicate, order_by)
+
+	def select_by_type(self, tarp_types, order_by):
+		predicate = self.make_predicate("type_name", tarp_types, True)
+		return self.select(predicate, order_by)
+
+	def select_by_damage(self, damage_list, order_by):
+		predicate = self.make_predicate("dmg_code", damage_list)
+		return self.select(predicate, order_by)
+
+	def make_predicate(self, key, value_list, is_pattern = False):
 		predicate = ""
-		for num in number_list:
-			predicate += f" (number = {num}) OR"
+		for code in value_list:
+			if is_pattern:
+				predicate += f" ({key} LIKE '%{code}%') OR"
+			else:
+				predicate += f" ({key} = '{code}') OR"
+
 		if predicate.endswith(" OR"):
 			predicate = predicate[0:-3]
 
-		return self.select(predicate, 'number')
-
-	def select_by_category(self, category):
-		predicate = f"cat_name LIKE '%{category}%'"
-
-		return self.select(predicate, 'number')
-
-	def select_by_type(self, tarp_type):
-		predicate = f"type_name LIKE '%{tarp_type}%'"
-
-		return self.select(predicate, 'number')
-
-	def select_by_damage(self, damage_list):
-		predicate = ""
-		for code in damage_list:
-			predicate += f" (dmg_code = '{code}') OR"
-		if predicate.endswith(" OR"):
-			predicate = predicate[0:-3]
-
-		return self.select(predicate, 'number')
+		return predicate
 
 	def select(self, predicate = None, order_by = None):
 		con = sqlite3.connect(self.db_path)
