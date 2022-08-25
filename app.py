@@ -5,6 +5,7 @@ from db_context import DbContext
 	
 app = Flask(__name__)
 
+# TODO: Get rid of hard-wired database path
 db_path = "D:\\Gamer I5\\Documents\\Projects\\Planenprogramm\\Planenprogramm\\data\\tarps.sqlite"
 
 if __name__ == '__main__':

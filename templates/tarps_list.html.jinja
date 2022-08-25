@@ -3,13 +3,51 @@
 
 <head>
 	<title>Planen</title>
+	<link rel="stylesheet" href="static/css/main.css" />
 </head>
 
 <body>
+	<form action="/" method="post">
+		<table>
+			<thead>
+				<tr>
+					<th>Auswahl nach</th>
+					<th>Wert</th>
+					<th>Sortiert nach</th>
+					<th></th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td>
+						<select name="select_by">
+							<option value="number">Nummer</option>
+							<option value="cat_name">Kategorie</option>
+							<option value="type_name">Planen-Typ</option>
+							<option value="damage_code">Schaden</option>
+						</select>
+					</td>
+					<td>
+						<input name="select_value" />
+					</td>
+					<td>
+						<select name="order_by">
+							<option value="number">Nummer</option>
+							<option value="cat_name">Kategorie</option>
+							<option value="type_name">Planen-Typ</option>
+						</select>
+					</td>
+					<td>
+						<button type="submit">Los</button>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</form>
 	<table>
 		<thead>
 			<tr>
-				<th>Nr.</th>
+				<th class="numeric">Nr.</th>
 				<th>Anmerkung</th>
 				<th>Kategorie</th>
 				<th>Typ</th>
@@ -18,7 +56,7 @@
 		<tbody>
 			{% for tarp in tarp_list %}
 			<tr>
-				<td>{{ tarp.number }}</td>
+				<td class="numeric">{{ tarp.number }}</td>
 				<td>{{ tarp.annotation }}</td>
 				<td>{{ tarp.category.name }}</td>
 				<td>{{ tarp.category.tarp_type.name }}</td>

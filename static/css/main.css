@@ -1,0 +1,39 @@
+
+:root {
+	--folke-blue: #174184;
+	--folke-green: #0e9638;
+	--folke-yellow: #fccc66;
+	--folke-white: #fefefe;
+}
+
+body {
+	font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+	font-size: small;
+	display: grid;
+}
+
+form {
+	align-self: center;
+	display: grid;
+}
+
+table {
+	align-self: center;
+}
+
+thead > tr > th {
+	text-align: left;
+	color: var(--folke-blue);
+	background-color: var(--folke-yellow);
+	padding-left: 1rem;
+	padding-right: 1rem;
+}
+
+tbody > tr > td {
+	padding-left: 0.8rem;
+	padding-right: 0.8rem;
+}
+
+.numeric {
+	text-align: right;
+}
