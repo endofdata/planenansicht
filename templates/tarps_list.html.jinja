@@ -20,21 +20,23 @@
 			<tbody>
 				<tr>
 					<td>
-						<select name="select_by">
-							<option value="number">Nummer</option>
-							<option value="cat_name">Kategorie</option>
-							<option value="type_name">Planen-Typ</option>
-							<option value="damage_code">Schaden</option>
+						<select id="select_by" name="select_by">
+							<option value="none">- alle -</option>
+							<option value="{{ PROPS.TARP_NUMBER }}">Nummer</option>
+							<option value="{{ PROPS.CAT_NAME }}">Kategorie</option>
+							<option value="{{ PROPS.TYPE_NAME }}">Planen-Typ</option>
+							<option value="{{ PROPS.DMG_CODE }}">Schaden</option>
 						</select>
 					</td>
 					<td>
-						<input name="select_value" />
+						<input name="select_value" value="{{ select_value }}"/>
 					</td>
 					<td>
-						<select name="order_by">
-							<option value="number">Nummer</option>
-							<option value="cat_name">Kategorie</option>
-							<option value="type_name">Planen-Typ</option>
+						<select id="order_by" name="order_by">
+							<option value="{{ PROPS.TARP_NUMBER }}">Nummer</option>
+							<option value="{{ PROPS.CAT_NAME }}">Kategorie</option>
+							<option value="{{ PROPS.TYPE_NAME }}">Planen-Typ</option>
+							<option value="{{ PROPS.DMG_CODE }}">Schaden</option>
 						</select>
 					</td>
 					<td>
@@ -49,6 +51,7 @@
 			<tr>
 				<th class="numeric">Nr.</th>
 				<th>Anmerkung</th>
+				<th>Schaden</th>
 				<th>Kategorie</th>
 				<th>Typ</th>
 			</tr>
@@ -58,6 +61,11 @@
 			<tr>
 				<td class="numeric">{{ tarp.number }}</td>
 				<td>{{ tarp.annotation }}</td>
+				<td>
+					{% for dmg in tarp.damages %}
+						{{ dmg.code }}
+					{% endfor %}
+				</td>
 				<td>{{ tarp.category.name }}</td>
 				<td>{{ tarp.category.tarp_type.name }}</td>
 			</tr>
@@ -65,5 +73,22 @@
 		</tbody>
 	</table>
 </body>
+<script lang="JavaScript">
+	function select_value(id, value) {
+		var combo = document.getElementById(id);
 
+		if (combo) {
+			for (idx in combo.options) {
+				opt = combo.options[idx]
+				if(opt.value === value) {
+					opt.selected = true;
+					break;
+				}
+			}
+		}
+	}
+
+	select_value('select_by', '{{ select_by }}');
+	select_value('order_by', '{{ order_by }}');
+</script>
 </html>
