@@ -69,11 +69,11 @@ class DbContext:
 		self.db_path = db_path
 
 	def select_by_numbers(self, number_list, order_by):
-		predicate = self.make_predicate(PROPS.TARP_NUMBER, number_list, True)
+		predicate = self.make_predicate(PROPS.TARP_NUMBER, number_list)
 		return self.select(predicate, order_by)
 
 	def select_by_category(self, category_list, order_by):
-		predicate = self.make_predicate(PROPS.CAT_NAME, category_list, True)
+		predicate = self.make_predicate(PROPS.CAT_NAME, category_list)
 		return self.select(predicate, order_by)
 
 	def select_by_type(self, tarp_types, order_by):
