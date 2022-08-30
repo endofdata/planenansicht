@@ -13,15 +13,14 @@
 				<tr>
 					<th>Auswahl nach</th>
 					<th>Wert</th>
-					<th>Sortiert nach</th>
-					<th></th>
 				</tr>
 			</thead>
 			<tbody>
+				{% for s in selection.selectors %}
 				<tr>
 					<td>
-						<select id="select_by" name="select_by">
-							<option value="none">- alle -</option>
+						<select id="select_by_{{ loop.index0 }}" name="select_by_{{ loop.index0 }}">
+							<option value="None">- alle -</option>
 							<option value="{{ PROPS.TARP_NUMBER }}">Nummer</option>
 							<option value="{{ PROPS.CAT_NAME }}">Kategorie</option>
 							<option value="{{ PROPS.TYPE_NAME }}">Planen-Typ</option>
@@ -29,10 +28,25 @@
 						</select>
 					</td>
 					<td>
-						<input name="select_value" value="{{ select_value }}"/>
+						<input id="select_value_{{ loop.index0 }}" name="select_value_{{ loop.index0 }}" />
 					</td>
+				</tr>
+				{% endfor %}
+			</tbody>
+		</table>
+		<table>
+			<thead>
+				<tr>
+					<th>Sortiert nach</th>
+					<th>Absteigend</th>
+				</tr>
+			</thead>
+			<tbody>
+				{% for o in selection.sequence %}
+				<tr>
 					<td>
-						<select id="order_by" name="order_by">
+						<select id="order_by_{{ loop.index0 }}" name="order_by_{{ loop.index0 }}">
+							<option value="None">-- unsortiert --</option>
 							<option value="{{ PROPS.TARP_NUMBER }}">Nummer</option>
 							<option value="{{ PROPS.CAT_NAME }}">Kategorie</option>
 							<option value="{{ PROPS.TYPE_NAME }}">Planen-Typ</option>
@@ -40,6 +54,16 @@
 						</select>
 					</td>
 					<td>
+						<input type="checkbox" id="order_dir_{{ loop.index0 }}" name="order_dir_{{ loop.index0 }}" />
+					</td>
+				</tr>
+				{% endfor %}
+			</tbody>
+		</table>
+		<table>
+			<tbody>
+				<tr>
+					<td colspan="2">
 						<button type="submit">Los</button>
 					</td>
 				</tr>
@@ -50,24 +74,24 @@
 		<thead>
 			<tr>
 				<th class="numeric">Nr.</th>
+				<th>Typ</th>
+				<th>Kategorie</th>
 				<th>Anmerkung</th>
 				<th>Schaden</th>
-				<th>Kategorie</th>
-				<th>Typ</th>
 			</tr>
 		</thead>
 		<tbody>
 			{% for tarp in tarp_list %}
 			<tr>
 				<td class="numeric">{{ tarp.number }}</td>
+				<td>{{ tarp.category.tarp_type.name }}</td>
+				<td>{{ tarp.category.name }}</td>
 				<td>{{ tarp.annotation }}</td>
 				<td>
 					{% for dmg in tarp.damages %}
-						{{ dmg.code }}
+					{{ dmg.code }}
 					{% endfor %}
 				</td>
-				<td>{{ tarp.category.name }}</td>
-				<td>{{ tarp.category.tarp_type.name }}</td>
 			</tr>
 			{% endfor %}
 		</tbody>
@@ -79,8 +103,8 @@
 
 		if (combo) {
 			for (idx in combo.options) {
-				opt = combo.options[idx]
-				if(opt.value === value) {
+				opt = combo.options[idx];
+				if (opt.value === value) {
 					opt.selected = true;
 					break;
 				}
@@ -88,7 +112,32 @@
 		}
 	}
 
-	select_value('select_by', '{{ select_by }}');
-	select_value('order_by', '{{ order_by }}');
+	function check_value(id, value) {
+		var checkbox = document.getElementById(id);
+
+		if (checkbox) {
+			checkbox.checked = value == 'True';
+		}
+	}
+
+	function set_value(id, value) {
+		var textbox = document.getElementById(id);
+
+		if(textbox) {
+			textbox.value = value;
+		}
+	}
+
+	{% for s in selection.selectors %}
+		select_value("select_by_{{ loop.index0 }}", "{{ s.property }}");
+		{% if s.values %}
+			set_value("select_value_{{ loop.index0 }}", "{{ s.values | join(' ') }}");
+		{% endif %}
+	{% endfor %}
+	{% for o in selection.sequence %}
+		select_value("order_by_{{ loop.index0 }}", "{{ o.property }}");
+		check_value("order_dir_{{ loop.index0 }}", "{{ o.is_descending }}");
+	{% endfor %}
 </script>
+
 </html>

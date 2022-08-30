@@ -99,7 +99,7 @@ class DbContext:
 
 		return predicate
 
-	def select(self, predicate = None, order_by = None):
+	def select(self, selection = None, order_by = None):
 		con = sqlite3.connect(self.db_path)
 		con.row_factory = sqlite3.Row
 		cur = con.cursor()
@@ -118,11 +118,8 @@ class DbContext:
 		"LEFT JOIN TarpDamages AS td ON t.Id = td.TarpId " \
 		"LEFT JOIN Damages AS d ON td.DamageId = d.Id "
 
-		if(predicate != None):
-			statement += f" WHERE {predicate}"
-
-		if order_by != None:
-			statement += f" ORDER BY {order_by}"
+		if selection != None:
+			statement += selection.to_sql()
 
 		for row in cur.execute(statement):
 
@@ -147,3 +144,36 @@ class DbContext:
 			tarp_list.append(tarp)
 
 		return tarp_list
+
+	def is_pattern_property(self, property):
+		if property == "None":
+			return False
+		elif property == PROPS.CAT_ID:
+			return False
+		elif property == PROPS.CAT_NAME:
+			return False
+		elif property == PROPS.CAT_LENGTH:
+			return False
+		elif property == PROPS.CAT_WIDTH:
+			return False
+		elif property == PROPS.CAT_ADD:
+			return False
+		elif property == PROPS.DMG_ID:
+			return False
+		elif property == PROPS.DMG_CODE:
+			return False
+		elif property == PROPS.DMG_DESC:
+			return True
+		elif property == PROPS.TARP_ID:
+			return False
+		elif property == PROPS.TARP_NUMBER:
+			return False
+		elif property == PROPS.TARP_ANNO:
+			return True
+		elif property == PROPS.TYPE_ID:
+			return False
+		elif property == PROPS.TYPE_NAME:
+			return True
+		else:
+			raise Exception(f"Unknown property '{property}'.")
+		

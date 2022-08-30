@@ -1,13 +1,19 @@
+import selectors
 from flask import Flask
 from flask import render_template
 from flask import request
 from db_context import DbContext
 from db_context import PROPS
+from entities import Selector
+from entities import Order
+from entities import Selection
 
 app = Flask(__name__)
 
 # TODO: Get rid of hard-wired database path
-db_path = "D:\\Gamer I5\\Documents\\Projects\\Planenprogramm\\Planenprogramm\\data\\tarps.sqlite"
+DB_PATH = "D:\\Gamer I5\\Documents\\Projects\\Planenprogramm\\Planenprogramm\\data\\tarps.sqlite"
+MAX_SELECTORS = 3
+MAX_SEQUENCE = 2
 
 if __name__ == '__main__':
     app.run(use_debugger=False, use_reloader=False, passthrough_errors=True)
@@ -15,35 +21,53 @@ if __name__ == '__main__':
 
 @app.route("/", methods = ['GET'])
 def list_tarps():
-	db_context = DbContext(db_path)
+	db_context = DbContext(DB_PATH)
 
 	tarp_list = db_context.select(order_by=PROPS.TARP_NUMBER)
-	return render_template("tarps_list.html.jinja", tarp_list=tarp_list)
+
+	selectors = []
+	for id in range(MAX_SELECTORS):
+		prop = None
+		value_list = None
+		is_pattern = False
+		selectors.append(Selector(prop, value_list, is_pattern))
+
+	sequence = []
+	for id in range(MAX_SEQUENCE):
+		prop = None
+		sequence.append(Order(prop, False))
+
+	empty_selection = Selection(selectors, sequence)
+	return render_template("tarps_list.html.jinja", tarp_list=tarp_list, selection=empty_selection, PROPS=PROPS)
 	
 @app.route("/", methods = ['POST'])
 def list_tarp_by():
-	db_context = DbContext(db_path)
+	db_context = DbContext(DB_PATH)
 
-	select_by = request.form["select_by"]
-	select_value = request.form["select_value"]
-	order_by = request.form["order_by"]
+	selectors = []
+	for id in range(MAX_SELECTORS):
+		prop = request.form[f"select_by_{id}"]
+		if prop != "None":
+			value_list = split_values(request.form[f"select_value_{id}"])
+			is_pattern = db_context.is_pattern_property(prop)
+			selectors.append(Selector(prop, value_list, is_pattern))
+		else:
+			selectors.append(Selector())
 
-	value_list = split_values(select_value)
+	sequence = []
+	for id in range(MAX_SEQUENCE):
+		prop = request.form[f"order_by_{id}"]
+		if prop != "None":
+			is_descending = request.form.__contains__(f"order_dir_{id}")
+			sequence.append(Order(prop, is_descending))
+		else:
+			sequence.append(Order())
 
-	if select_by == "none":
-		tarp_list = db_context.select(order_by=order_by)
-	elif select_by == PROPS.TARP_NUMBER:
-		tarp_list = db_context.select_by_numbers(value_list, order_by)
-	elif select_by == PROPS.TYPE_NAME:
-		tarp_list = db_context.select_by_type(value_list, order_by)
-	elif select_by == PROPS.CAT_NAME:
-		tarp_list = db_context.select_by_category(value_list, order_by)
-	elif select_by == PROPS.DMG_CODE:
-		tarp_list = db_context.select_by_damage(value_list, order_by)
-	else:
-		raise Exception(f"Unexpected selection type '{select_by}'")
+	selection = Selection(selectors, sequence)
 		
-	return render_template("tarps_list.html.jinja", tarp_list=tarp_list, select_by=select_by, select_value=select_value, order_by=order_by, PROPS=PROPS)
+	tarp_list = db_context.select(selection)
+		
+	return render_template("tarps_list.html.jinja", tarp_list=tarp_list, selection=selection, PROPS=PROPS)
 
 def split_values(text):
 	return text.split()
