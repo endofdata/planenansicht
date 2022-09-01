@@ -3,99 +3,86 @@
 
 <head>
 	<title>Planen</title>
+	<meta name="viewport" content="width=device-width,initial-scale=1">
 	<link rel="stylesheet" href="static/css/main.css" />
 </head>
 
 <body>
 	<form action="/" method="post">
-		<table>
-			<thead>
-				<tr>
-					<th>Auswahl nach</th>
-					<th>Wert</th>
-				</tr>
-			</thead>
-			<tbody>
-				{% for s in selection.selectors %}
-				<tr>
-					<td>
-						<select id="select_by_{{ loop.index0 }}" name="select_by_{{ loop.index0 }}">
-							<option value="None">- alle -</option>
-							<option value="{{ PROPS.TARP_NUMBER }}">Nummer</option>
-							<option value="{{ PROPS.CAT_NAME }}">Kategorie</option>
-							<option value="{{ PROPS.TYPE_NAME }}">Planen-Typ</option>
-							<option value="{{ PROPS.DMG_CODE }}">Schaden</option>
-						</select>
-					</td>
-					<td>
-						<input id="select_value_{{ loop.index0 }}" name="select_value_{{ loop.index0 }}" />
-					</td>
-				</tr>
-				{% endfor %}
-			</tbody>
-		</table>
-		<table>
-			<thead>
-				<tr>
-					<th>Sortiert nach</th>
-					<th>Absteigend</th>
-				</tr>
-			</thead>
-			<tbody>
-				{% for o in selection.sequence %}
-				<tr>
-					<td>
-						<select id="order_by_{{ loop.index0 }}" name="order_by_{{ loop.index0 }}">
-							<option value="None">-- unsortiert --</option>
-							<option value="{{ PROPS.TARP_NUMBER }}">Nummer</option>
-							<option value="{{ PROPS.CAT_NAME }}">Kategorie</option>
-							<option value="{{ PROPS.TYPE_NAME }}">Planen-Typ</option>
-							<option value="{{ PROPS.DMG_CODE }}">Schaden</option>
-						</select>
-					</td>
-					<td>
-						<input type="checkbox" id="order_dir_{{ loop.index0 }}" name="order_dir_{{ loop.index0 }}" />
-					</td>
-				</tr>
-				{% endfor %}
-			</tbody>
-		</table>
-		<table>
-			<tbody>
-				<tr>
-					<td colspan="2">
-						<button type="submit">Los</button>
-					</td>
-				</tr>
-			</tbody>
-		</table>
-	</form>
-	<table>
-		<thead>
-			<tr>
-				<th class="numeric">Nr.</th>
-				<th>Typ</th>
-				<th>Kategorie</th>
-				<th>Anmerkung</th>
-				<th>Schaden</th>
-			</tr>
-		</thead>
-		<tbody>
-			{% for tarp in tarp_list %}
-			<tr>
-				<td class="numeric">{{ tarp.number }}</td>
-				<td>{{ tarp.category.tarp_type.name }}</td>
-				<td>{{ tarp.category.name }}</td>
-				<td>{{ tarp.annotation }}</td>
-				<td>
-					{% for dmg in tarp.damages %}
-					{{ dmg.code }}
-					{% endfor %}
-				</td>
-			</tr>
+		<div class="table">
+			<div class="row header">
+				<div class="filter-label">Filter</div>
+				<div class="filter-value">Wert</div>
+			</div>
+			{% for s in selection.selectors %}
+			<div class="row filter">
+				<div class="filter-label">
+					<select id="select_by_{{ loop.index0 }}" name="select_by_{{ loop.index0 }}">
+						<option value="None">- alle -</option>
+						<option value="{{ PROPS.TARP_NUMBER }}">Nummer</option>
+						<option value="{{ PROPS.CAT_NAME }}">Kategorie</option>
+						<option value="{{ PROPS.TYPE_NAME }}">Planen-Typ</option>
+						<option value="{{ PROPS.DMG_CODE }}">Schaden</option>
+					</select>
+				</div>
+				<div class="filter-value">
+					<input id="select_value_{{ loop.index0 }}" name="select_value_{{ loop.index0 }}" />
+				</div>
+			</div>
 			{% endfor %}
-		</tbody>
-	</table>
+		</div>
+		<div class="table">
+			<div class="row header">
+				<div class="filter-label">Sortierung</div>
+				<div class="filter-value">Absteigend</div>
+			</div>
+			{% for o in selection.sequence %}
+			<div class="row filter">
+				<div class="filter-label">
+					<select id="order_by_{{ loop.index0 }}" name="order_by_{{ loop.index0 }}">
+						<option value="None">-- unsortiert --</option>
+						<option value="{{ PROPS.TARP_NUMBER }}">Nummer</option>
+						<option value="{{ PROPS.CAT_NAME }}">Kategorie</option>
+						<option value="{{ PROPS.TYPE_NAME }}">Planen-Typ</option>
+						<option value="{{ PROPS.DMG_CODE }}">Schaden</option>
+					</select>
+				</div>
+				<div class="filter-value">
+					<input type="checkbox" id="order_dir_{{ loop.index0 }}" name="order_dir_{{ loop.index0 }}" />
+				</div>
+			</div>
+			{% endfor %}
+		</div>
+		<div class="table">
+			<div class="row filter">
+				<div class="buttons">
+					<button type="submit">Aktualisieren</button>
+				</div>
+			</div>
+		</div>
+	</form>
+	<div class="table">
+		<div class="row header">
+			<div class="numeric number">Nr.</div>
+			<div class="type">Typ</div>
+			<div class="category">Kat.</div>
+			<div class="annotation">Anmerkung</div>
+			<div class="damages">Schaden</div>
+		</div>
+		{% for tarp in tarp_list %}
+		<div class="row item">
+			<div class="numeric number">{{ tarp.number }}</div>
+			<div class="type">{{ tarp.category.tarp_type.name }}</div>
+			<div class="category">{{ tarp.category.name }}</div>
+			<div class="annotation">{{ tarp.annotation }}</div>
+			<div class="damages">
+				{% for dmg in tarp.damages %}
+				{{ dmg.code }}
+				{% endfor %}
+			</div>
+		</div>
+		{% endfor %}
+	</div>
 </body>
 <script lang="JavaScript">
 	function select_value(id, value) {
@@ -123,20 +110,20 @@
 	function set_value(id, value) {
 		var textbox = document.getElementById(id);
 
-		if(textbox) {
+		if (textbox) {
 			textbox.value = value;
 		}
 	}
 
 	{% for s in selection.selectors %}
-		select_value("select_by_{{ loop.index0 }}", "{{ s.property }}");
-		{% if s.values %}
-			set_value("select_value_{{ loop.index0 }}", "{{ s.values | join(' ') }}");
-		{% endif %}
+	select_value("select_by_{{ loop.index0 }}", "{{ s.property }}");
+	{% if s.values %}
+	set_value("select_value_{{ loop.index0 }}", "{{ s.values | join(' ') }}");
+	{% endif %}
 	{% endfor %}
 	{% for o in selection.sequence %}
-		select_value("order_by_{{ loop.index0 }}", "{{ o.property }}");
-		check_value("order_dir_{{ loop.index0 }}", "{{ o.is_descending }}");
+	select_value("order_by_{{ loop.index0 }}", "{{ o.property }}");
+	check_value("order_dir_{{ loop.index0 }}", "{{ o.is_descending }}");
 	{% endfor %}
 </script>
 

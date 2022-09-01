@@ -8,33 +8,91 @@
 
 body {
 	font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-	font-size: small;
-	display: grid;
 }
 
 form {
 	align-self: center;
-	display: grid;
+	margin: 0em 0em 1.5em 0em;
 }
 
-table {
-	align-self: center;
+button {
+	color: var(--folke-white);
+	background-color: var(--folke-blue);
+	border: 1px solid black;
+	border-radius: 0.2em;
+	padding: 0.2rem 1rem;
+	min-width: 10em;
 }
 
-thead > tr > th {
+.row {
+	display: flex;
+	flex-wrap: wrap;
+}
+
+.row > * {
+	padding: 0.2rem 0.3rem;
 	text-align: left;
-	color: var(--folke-blue);
-	background-color: var(--folke-yellow);
-	padding-left: 1rem;
-	padding-right: 1rem;
+	box-sizing: border-box;
 }
 
-tbody > tr > td {
-	vertical-align: top;
-	padding-left: 0.8rem;
-	padding-right: 0.8rem;
+.item {
+	border: 1px solid var(--folke-blue);
+	border-radius: 0.2rem;
+	margin: 0.2rem 0rem;
+}
+
+.header > * {
+	background-color: var(--folke-blue);
+	color: white;
 }
 
 .numeric {
 	text-align: right;
+}
+
+.number {
+	flex-grow: 1;
+	flex-basis: 4ch;
+	width: 5%;
+}
+
+.type {
+	flex-grow: 6;
+	flex-basis: 16ch;
+	width: 30%;
+}
+
+.category {
+	flex-grow: 2;
+	width: 10%;
+}
+
+.annotation {
+	flex-grow: 8;
+	width: 40%;
+}
+
+.damages {
+	flex-grow: 3;
+	width: 15%;
+}
+
+.filter-label {
+	width: 30%;
+}
+
+.filter-value {
+	width: 70%;
+}
+
+.filter {
+	background-color: var(--folke-yellow);
+}
+
+.buttons {
+	display: flex;
+	width: 100%;
+	padding: 0.4em;
+	justify-content: center;
+	align-items: center;
 }
