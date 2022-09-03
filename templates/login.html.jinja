@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+	<title>Anmeldung</title>
+	<meta name="viewport" content="width=device-width,initial-scale=1">
+	<link rel="stylesheet" href="static/css/main.css" />
+</head>
+
+<body>
+	<form action="/login" method="post">
+		<div class="table">
+			<div class="row header">
+				<div class="filter-label">Benutzer</div>
+			</div>
+			<div class="row">
+				<div class="filter-label">
+					<input name="{{ USER_PROPS.USER_NAME }}" id="{{ USER_PROPS.USER_NAME }}"/>
+				</div>
+			</div>
+			<div class="row header">
+				<div class="filter-label">Passwort</div>
+			</div>
+			<div class="row">
+				<div class="filter-label">
+					<input name="{{ USER_PROPS.USER_PASSWORD }}" id="{{ USER_PROPS.USER_PASSWORD }}" type="password"/>
+				</div>
+			</div>
+		</div>
+		<div class="table">
+			<div class="row filter">
+				<div class="buttons">
+					<button type="submit">Anmelden</button>
+				</div>
+			</div>
+		</div>
+	</form>
+</body>
+</html>

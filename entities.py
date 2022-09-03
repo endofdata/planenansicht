@@ -1,3 +1,7 @@
+from bcrypt import hashpw, gensalt, checkpw
+from base64  import b64encode
+from hashlib import sha256
+
 class Damage:
 	def __init__(self, id, code, description):
 		self.id = id
@@ -110,3 +114,22 @@ class Selection:
 			predicate = predicate[0:-2]
 
 		return predicate
+
+class User:
+	def __init__(self, id, name, display, pwd_hash, rights):
+		self.id = id
+		self.name = name
+		self.display = display
+		self.pwd_hash = pwd_hash
+		self.rights = rights
+
+	def encrypt_pwd(self, pwd):    
+		self.pwd_hash = hashpw(b64encode(sha256(pwd.encode()).digest()), gensalt()).decode()
+		
+	def check_pwd(self, pwd):
+		return checkpw(b64encode(sha256(pwd.encode()).digest()), self.pwd_hash.encode())
+
+class AccessRight:
+	def __init__(self, id, display):
+		self.id = id
+		self.display = display

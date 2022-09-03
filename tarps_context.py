@@ -1,15 +1,9 @@
 
 import sqlite3
 from entities import Tarp, TarpCategory, TarpType, Damage
+from db_tools import constant
 
-def constant(f):
-	def fset(self, value):
-		raise TypeError
-	def fget(self):
-		return f()
-	return property(fget, fset)
-
-class Properties:
+class TarpsProperties:
 	@constant
 	def TARP_ID():
 		return "id"
@@ -62,26 +56,26 @@ class Properties:
 	def DMG_DESC():
 		return "dmg_desc"
 
-PROPS = Properties()
+TARPS_PROPS = TarpsProperties()
 
-class DbContext:
+class TarpsContext:
 	def __init__(self, db_path):
 		self.db_path = db_path
 
 	def select_by_numbers(self, number_list, order_by):
-		predicate = self.make_predicate(PROPS.TARP_NUMBER, number_list)
+		predicate = self.make_predicate(TARPS_PROPS.TARP_NUMBER, number_list)
 		return self.select(predicate, order_by)
 
 	def select_by_category(self, category_list, order_by):
-		predicate = self.make_predicate(PROPS.CAT_NAME, category_list)
+		predicate = self.make_predicate(TARPS_PROPS.CAT_NAME, category_list)
 		return self.select(predicate, order_by)
 
 	def select_by_type(self, tarp_types, order_by):
-		predicate = self.make_predicate(PROPS.TYPE_NAME, tarp_types, True)
+		predicate = self.make_predicate(TARPS_PROPS.TYPE_NAME, tarp_types, True)
 		return self.select(predicate, order_by)
 
 	def select_by_damage(self, damage_list, order_by):
-		predicate = self.make_predicate(PROPS.DMG_CODE, damage_list)
+		predicate = self.make_predicate(TARPS_PROPS.DMG_CODE, damage_list)
 		return self.select(predicate, order_by)
 
 	def make_predicate(self, key, value_list, is_pattern = False):
@@ -108,10 +102,10 @@ class DbContext:
 		tarp = None
 		damages = []
 
-		statement = f"SELECT t.Id AS {PROPS.TARP_ID}, t.Number AS {PROPS.TARP_NUMBER}, t.Annotation AS {PROPS.TARP_ANNO}, " \
-		f"c.Id as {PROPS.CAT_ID}, c.Name as {PROPS.CAT_NAME}, c.Width as {PROPS.CAT_WIDTH}, c.Length as {PROPS.CAT_LENGTH}, c.Additional as {PROPS.CAT_ADD}, " \
-		f"y.Id as {PROPS.TYPE_ID}, y.Name as {PROPS.TYPE_NAME}, " \
-		f"d.Id as {PROPS.DMG_ID}, d.Code as {PROPS.DMG_CODE}, d.Description as {PROPS.DMG_DESC} " \
+		statement = f"SELECT t.Id AS {TARPS_PROPS.TARP_ID}, t.Number AS {TARPS_PROPS.TARP_NUMBER}, t.Annotation AS {TARPS_PROPS.TARP_ANNO}, " \
+		f"c.Id as {TARPS_PROPS.CAT_ID}, c.Name as {TARPS_PROPS.CAT_NAME}, c.Width as {TARPS_PROPS.CAT_WIDTH}, c.Length as {TARPS_PROPS.CAT_LENGTH}, c.Additional as {TARPS_PROPS.CAT_ADD}, " \
+		f"y.Id as {TARPS_PROPS.TYPE_ID}, y.Name as {TARPS_PROPS.TYPE_NAME}, " \
+		f"d.Id as {TARPS_PROPS.DMG_ID}, d.Code as {TARPS_PROPS.DMG_CODE}, d.Description as {TARPS_PROPS.DMG_DESC} " \
 		"FROM Tarps AS t " \
 		"JOIN Categories AS c ON t.CategoryId = c.Id " \
 		"JOIN TarpTypes AS y ON c.TarpTypeId = y.Id " \
@@ -123,7 +117,7 @@ class DbContext:
 
 		for row in cur.execute(statement):
 
-			tarp_id = row[PROPS.TARP_ID]
+			tarp_id = row[TARPS_PROPS.TARP_ID]
 			if tarp_id != last_id:
 				last_id = tarp_id
 				if tarp != None:
@@ -131,12 +125,12 @@ class DbContext:
 					tarp_list.append(tarp)
 					damages = []
 
-				tarp_type = TarpType(row[PROPS.TYPE_ID], row[PROPS.TYPE_NAME])
-				category = TarpCategory(row[PROPS.CAT_ID], row[PROPS.CAT_NAME], row[PROPS.CAT_WIDTH],  row[PROPS.CAT_LENGTH], row[PROPS.CAT_ADD], tarp_type)
-				tarp = Tarp(row[PROPS.TARP_ID], row[PROPS.TARP_NUMBER], row[PROPS.TARP_ANNO], category, damages)
+				tarp_type = TarpType(row[TARPS_PROPS.TYPE_ID], row[TARPS_PROPS.TYPE_NAME])
+				category = TarpCategory(row[TARPS_PROPS.CAT_ID], row[TARPS_PROPS.CAT_NAME], row[TARPS_PROPS.CAT_WIDTH],  row[TARPS_PROPS.CAT_LENGTH], row[TARPS_PROPS.CAT_ADD], tarp_type)
+				tarp = Tarp(row[TARPS_PROPS.TARP_ID], row[TARPS_PROPS.TARP_NUMBER], row[TARPS_PROPS.TARP_ANNO], category, damages)
 
-			if row[PROPS.DMG_ID] != None:
-				damage = Damage(row[PROPS.DMG_ID], row[PROPS.DMG_CODE], row[PROPS.DMG_DESC])			
+			if row[TARPS_PROPS.DMG_ID] != None:
+				damage = Damage(row[TARPS_PROPS.DMG_ID], row[TARPS_PROPS.DMG_CODE], row[TARPS_PROPS.DMG_DESC])			
 				damages.append(damage)
 
 		if tarp != None:
@@ -148,31 +142,31 @@ class DbContext:
 	def is_pattern_property(self, property):
 		if property == "None":
 			return False
-		elif property == PROPS.CAT_ID:
+		elif property == TARPS_PROPS.CAT_ID:
 			return False
-		elif property == PROPS.CAT_NAME:
+		elif property == TARPS_PROPS.CAT_NAME:
 			return False
-		elif property == PROPS.CAT_LENGTH:
+		elif property == TARPS_PROPS.CAT_LENGTH:
 			return False
-		elif property == PROPS.CAT_WIDTH:
+		elif property == TARPS_PROPS.CAT_WIDTH:
 			return False
-		elif property == PROPS.CAT_ADD:
+		elif property == TARPS_PROPS.CAT_ADD:
 			return False
-		elif property == PROPS.DMG_ID:
+		elif property == TARPS_PROPS.DMG_ID:
 			return False
-		elif property == PROPS.DMG_CODE:
+		elif property == TARPS_PROPS.DMG_CODE:
 			return False
-		elif property == PROPS.DMG_DESC:
+		elif property == TARPS_PROPS.DMG_DESC:
 			return True
-		elif property == PROPS.TARP_ID:
+		elif property == TARPS_PROPS.TARP_ID:
 			return False
-		elif property == PROPS.TARP_NUMBER:
+		elif property == TARPS_PROPS.TARP_NUMBER:
 			return False
-		elif property == PROPS.TARP_ANNO:
+		elif property == TARPS_PROPS.TARP_ANNO:
 			return True
-		elif property == PROPS.TYPE_ID:
+		elif property == TARPS_PROPS.TYPE_ID:
 			return False
-		elif property == PROPS.TYPE_NAME:
+		elif property == TARPS_PROPS.TYPE_NAME:
 			return True
 		else:
 			raise Exception(f"Unknown property '{property}'.")

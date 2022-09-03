@@ -11,7 +11,13 @@
 			"module": "flask",
 			"env": {
 				"FLASK_APP": "app.py",
-				"FLASK_ENV": "development"
+				// TODO: Set the path to and including the data folder with the .sqlite files
+				"TARPS_DATA_ROOT": "",
+				"TARPS_MAX_SELECTORS": "3",
+				"TARPS_MAX_ORDERS": "2",
+				"TARPS_LOG_LEVEL": "debug",
+				// TODO: Generate a secret e.g., with python -c 'import secrets; print(secrets.token_hex())'
+				"TARPS_SECRET_KEY": ""
 			},
 			"args": [
 				"run",
