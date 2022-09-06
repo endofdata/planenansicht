@@ -27,4 +27,10 @@ class Environment:
 		numeric_level = getattr(logging, self.log_level, None)
 		if not isinstance(numeric_level, int):
 			raise ValueError(f"Unsupported TARPS_LOG_LEVEL='{self.log_level}'")
-		logging.basicConfig(level=numeric_level)
+		logging.basicConfig(
+			level=numeric_level,
+			format="%(levelname)s: %(name)s [%(thread)s] %(message)s"
+		)
+
+
+env = Environment()

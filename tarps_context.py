@@ -2,6 +2,7 @@
 import sqlite3
 from entities import Tarp, TarpCategory, TarpType, Damage
 from db_tools import constant
+import logging
 
 class TarpsProperties:
 	@constant
@@ -60,7 +61,15 @@ TARPS_PROPS = TarpsProperties()
 
 class TarpsContext:
 	def __init__(self, db_path):
+		logging.info("creating TarpsContext")
 		self.db_path = db_path
+		self.connection = None
+
+	def __del__(self):
+		logging.info("dropping TarpsContext")
+		if self.connection != None:
+			logging.info(f"closing connection to '{self.db_path}'.")
+			self.connection.close()
 
 	def select_by_numbers(self, number_list, order_by):
 		predicate = self.make_predicate(TARPS_PROPS.TARP_NUMBER, number_list)
@@ -94,8 +103,7 @@ class TarpsContext:
 		return predicate
 
 	def select(self, selection = None, order_by = None):
-		con = sqlite3.connect(self.db_path)
-		con.row_factory = sqlite3.Row
+		con = self.__get_connection__()
 		cur = con.cursor()
 		tarp_list = []
 		last_id = -1
@@ -171,3 +179,12 @@ class TarpsContext:
 		else:
 			raise Exception(f"Unknown property '{property}'.")
 		
+	def __get_connection__(self):
+		if self.connection == None:
+			logging.info(f"creating new database connection to '{self.db_path}'.")
+			self.connection = sqlite3.connect(self.db_path)
+			self.connection.row_factory = sqlite3.Row
+		else:
+			logging.info(f"TarpsContext: reusing connection")
+
+		return self.connection

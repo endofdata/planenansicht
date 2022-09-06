@@ -1,6 +1,7 @@
 import sqlite3
 from db_tools import constant
 from entities import User, AccessRight
+import logging
 
 class UserProperties:
 	@constant
@@ -35,7 +36,15 @@ USER_PROPS = UserProperties()
 
 class UserContext:
 	def __init__(self, db_path):
+		logging.info("creating UserContext")
 		self.db_path = db_path
+		self.connection = None
+
+	def __del__(self):
+		logging.info("dropping UserContext")
+		if self.connection != None:
+			logging.info(f"closing connection to '{self.db_path}'.")
+			self.connection.close()
 
 	def get_user_by_id(self, id) -> User:
 		return self.get_single_user_where(f"{USER_PROPS.USER_ID} == {id}")
@@ -55,8 +64,7 @@ class UserContext:
 			raise ValueError(f"get_users_where('{predicate}') returned {user_count} results.")
 			
 	def get_users_where(self, predicate):
-		con = sqlite3.connect(self.db_path)
-		con.row_factory = sqlite3.Row
+		con = self.__get_connection__()
 		cur = con.cursor()
 		user_list = []
 		user = None
@@ -94,3 +102,41 @@ class UserContext:
 			user_list.append(user)
 
 		return user_list
+
+	def change_password(self, user, pwd):
+		if user == None:
+			raise ValueError("User must be specified.")
+
+		if pwd == None or pwd == "":
+			raise ValueError("User password cannot be null or empty.")
+
+		pwd_hash = user.encrypt_pwd(pwd)
+
+		if pwd_hash == None or pwd_hash == "":
+			raise ValueError("Failed to encrypt password.")
+
+		statement = "UPDATE Users SET PasswordHash = ? WHERE Id = ?;"
+
+		with self.__get_connection__() as con:
+			cur = con.execute(statement, (pwd_hash, user.id,))
+
+			if cur.rowcount != 1:
+				raise ValueError(f"Expected one row to change but was {cur.rowcount}")
+
+			# for tests, check if password change is propagated to db
+			statement = "SELECT PasswordHash FROM Users WHERE Id = ? AND PasswordHash = ?;"
+			cur = con.execute(statement, (user.id, pwd_hash,))
+			check_hash_row = cur.fetchone()
+			if check_hash_row["PasswordHash"] != pwd_hash:
+				raise ValueError("Failed to update password hash.")
+			#con.commit()
+
+	def __get_connection__(self):
+		if self.connection == None:
+			logging.info(f"creating new database connection to '{self.db_path}'.")
+			self.connection = sqlite3.connect(self.db_path)
+			self.connection.row_factory = sqlite3.Row
+		else:
+			logging.info(f"UserContext: reusing connection")
+
+		return self.connection

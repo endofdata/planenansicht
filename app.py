@@ -1,72 +1,58 @@
-from environment import Environment
-from flask import Flask
-from flask import render_template, request, session, redirect, url_for
-from auth_context import AuthenticationContext
-from tarps_context import TarpsContext
+from environment import env
+from flask import Flask, render_template, request, session, redirect, url_for
 from tarps_context import TARPS_PROPS
-from user_context import USER_PROPS
 from entities import Selector
 from entities import Order
 from entities import Selection
-from user_context import UserContext
-from contextvars import ContextVar
+from user_manager import user_api
+from authentication import authentication_api, authenticate
+from routing import *
+from request_context import RequestContext, _request_context
 from werkzeug.local import LocalProxy
+import logging
+from sys import exc_info
 
-env = Environment()
 env.init_logging()
 env.log()
+
+request_context = LocalProxy(_request_context)
+
 app = Flask(__name__)
 app.secret_key = env.get_secret_key()
+app.register_blueprint(authentication_api)
+app.register_blueprint(user_api)
+
 
 if __name__ == '__main__':
 	app.run(use_debugger=False, use_reloader=False, passthrough_errors=True)
 
-_auth_context = ContextVar("auth_context")
-auth_context = LocalProxy(_auth_context)
-
 @app.before_request
-def authenticate():
-	if not request.path.startswith("/static"):
-		auth_context = AuthenticationContext()
-		if request.path == "/login":
-			auth_context.user = None 
-		elif USER_PROPS.USER_NAME in session:
-			user_context = UserContext(env.db_users)
-			auth_context.user = user_context.get_user_by_name(session[USER_PROPS.USER_NAME])		
-		else:
-			auth_context.user = None
-			return redirect(url_for("login"))		
+def app_before_request():
+	_request_context.set(RequestContext())
+	if auth_required(request):
+		return authenticate()
 
+@app.teardown_request
+def app_teardown_request(err):
+	rq = request_context
+	if rq != None:
+		try:
+			del rq
+			_request_context.set(None)
+		except:
+			logging.error(exc_info())
 
+def auth_required(request) -> bool:
+	path = request.path
+	if path.startswith("/static"):
+		return False
+	if path.startswith("/favicon.ico"):
+		return False
+	return True
 
-
-@app.route("/login", methods = ['GET', 'POST'])
-def login():
-	if request.method == "GET" or request.form[USER_PROPS.USER_NAME] == None:
-		return render_template("login.html.jinja", USER_PROPS=USER_PROPS)
-	else:
-		user_name = request.form[USER_PROPS.USER_NAME]
-		redir = None
-		user_context = UserContext(env.db_users)
-		user = user_context.get_user_by_name(user_name)		
-		if user == None:
-			redir = "login"
-		else:
-			if user.check_pwd(request.form[USER_PROPS.USER_PASSWORD]):
-				session[USER_PROPS.USER_NAME] = user.name
-				redir = "/"
-			else:
-				redir = "login"
-
-		redirect(url_for(redir))
-
-@app.route("/logout", methods = ['GET'])
-def logout():
-	session.clear()
-
-@app.route("/", methods = ['GET'])
+@app.route(ROOT_ENDPOINT, methods = ['GET'])
 def list_tarps():
-	db_context = TarpsContext(env.db_tarps)
+	db_context = request_context.tarps_context
 
 	tarp_list = db_context.select(order_by=TARPS_PROPS.TARP_NUMBER)
 
@@ -79,11 +65,11 @@ def list_tarps():
 		sequence.append(Order())
 
 	empty_selection = Selection(selectors, sequence)
-	return render_template("tarps_list.html.jinja", tarp_list=tarp_list, selection=empty_selection, TARPS_PROPS=TARPS_PROPS)
+	return render_template("tarps_list.html.jinja", tarp_list=tarp_list, selection=empty_selection, TARPS_PROPS=TARPS_PROPS, ROUTING=ROUTING)
 	
-@app.route("/", methods = ['POST'])
+@app.route(ROOT_ENDPOINT, methods = ['POST'])
 def list_tarp_by():
-	db_context = TarpsContext(env.db_tarps)
+	db_context = request_context.tarps_context
 
 	selectors = []
 	for id in range(env.max_selectors):
@@ -108,7 +94,7 @@ def list_tarp_by():
 		
 	tarp_list = db_context.select(selection)
 		
-	return render_template("tarps_list.html.jinja", tarp_list=tarp_list, selection=selection, TARPS_PROPS=TARPS_PROPS)
+	return render_template("tarps_list.html.jinja", tarp_list=tarp_list, selection=selection, TARPS_PROPS=TARPS_PROPS, ROUTING=ROUTING)
 
 def split_values(text):
 	return text.split()

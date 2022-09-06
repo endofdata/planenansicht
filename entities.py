@@ -1,3 +1,4 @@
+from multiprocessing.sharedctypes import Value
 from bcrypt import hashpw, gensalt, checkpw
 from base64  import b64encode
 from hashlib import sha256
@@ -123,10 +124,15 @@ class User:
 		self.pwd_hash = pwd_hash
 		self.rights = rights
 
-	def encrypt_pwd(self, pwd):    
+	def encrypt_pwd(self, pwd):
+		if pwd == None or pwd == "":
+			raise ValueError("The password cannot be empty or unset")
 		self.pwd_hash = hashpw(b64encode(sha256(pwd.encode()).digest()), gensalt()).decode()
+		return self.pwd_hash
 		
 	def check_pwd(self, pwd):
+		if pwd == None or pwd == "":
+			return False
 		return checkpw(b64encode(sha256(pwd.encode()).digest()), self.pwd_hash.encode())
 
 class AccessRight:
