@@ -65,7 +65,7 @@ def list_tarps():
 		sequence.append(Order())
 
 	empty_selection = Selection(selectors, sequence)
-	return render_template("tarps_list.html.jinja", tarp_list=tarp_list, selection=empty_selection, TARPS_PROPS=TARPS_PROPS, ROUTING=ROUTING)
+	return render_tarp_list(tarp_list, empty_selection)
 	
 @app.route(ROOT_ENDPOINT, methods = ['POST'])
 def list_tarp_by():
@@ -90,11 +90,14 @@ def list_tarp_by():
 		else:
 			sequence.append(Order())
 
-	selection = Selection(selectors, sequence)
-		
+	selection = Selection(selectors, sequence)		
 	tarp_list = db_context.select(selection)
 		
-	return render_template("tarps_list.html.jinja", tarp_list=tarp_list, selection=selection, TARPS_PROPS=TARPS_PROPS, ROUTING=ROUTING)
+	return render_tarp_list(tarp_list, selection)
 
 def split_values(text):
 	return text.split()
+
+def render_tarp_list(tarp_list, selection):
+	return render_template("tarps_list.html.jinja", tarp_list=tarp_list, selection=selection, 
+		TARPS_PROPS=TARPS_PROPS, ROUTING=ROUTING, auth_context=request_context.auth_context)

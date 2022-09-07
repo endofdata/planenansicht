@@ -1,66 +1,61 @@
-<!DOCTYPE html>
-<html lang="de">
+{% extends "layout.html.jinja" %}
 
-<head>
-	<title>Planen</title>
-	<meta name="viewport" content="width=device-width,initial-scale=1">
-	<link rel="stylesheet" href="/static/css/main.css" />
-</head>
-
-<body>
-	<form action="{{ ROUTING.ROOT_ENDPOINT }}" method="post">
-		<div class="table">
-			<div class="row header">
-				<div class="filter-label">Filter</div>
-				<div class="filter-value">Wert</div>
-			</div>
-			{% for s in selection.selectors %}
-			<div class="row filter">
-				<div class="filter-label">
-					<select id="select_by_{{ loop.index0 }}" name="select_by_{{ loop.index0 }}">
-						<option value="None">- alle -</option>
-						<option value="{{ TARPS_PROPS.TARP_NUMBER }}">Nummer</option>
-						<option value="{{ TARPS_PROPS.CAT_NAME }}">Kategorie</option>
-						<option value="{{ TARPS_PROPS.TYPE_NAME }}">Planen-Typ</option>
-						<option value="{{ TARPS_PROPS.DMG_CODE }}">Schaden</option>
-					</select>
+{% block content %}
+	<div class="table">
+		<form action="{{ ROUTING.ROOT_ENDPOINT }}" method="post">
+			<div class="table">
+				<div class="row header">
+					<div class="filter-label">Filter</div>
+					<div class="filter-value">Wert</div>
 				</div>
-				<div class="filter-value">
-					<input id="select_value_{{ loop.index0 }}" name="select_value_{{ loop.index0 }}" />
+				{% for s in selection.selectors %}
+				<div class="row filter">
+					<div class="filter-label">
+						<select id="select_by_{{ loop.index0 }}" name="select_by_{{ loop.index0 }}">
+							<option value="None">- alle -</option>
+							<option value="{{ TARPS_PROPS.TARP_NUMBER }}">Nummer</option>
+							<option value="{{ TARPS_PROPS.CAT_NAME }}">Kategorie</option>
+							<option value="{{ TARPS_PROPS.TYPE_NAME }}">Planen-Typ</option>
+							<option value="{{ TARPS_PROPS.DMG_CODE }}">Schaden</option>
+						</select>
+					</div>
+					<div class="filter-value">
+						<input id="select_value_{{ loop.index0 }}" name="select_value_{{ loop.index0 }}" />
+					</div>
 				</div>
+				{% endfor %}
 			</div>
-			{% endfor %}
-		</div>
-		<div class="table">
-			<div class="row header">
-				<div class="filter-label">Sortierung</div>
-				<div class="filter-value">Absteigend</div>
-			</div>
-			{% for o in selection.sequence %}
-			<div class="row filter">
-				<div class="filter-label">
-					<select id="order_by_{{ loop.index0 }}" name="order_by_{{ loop.index0 }}">
-						<option value="None">-- unsortiert --</option>
-						<option value="{{ TARPS_PROPS.TARP_NUMBER }}">Nummer</option>
-						<option value="{{ TARPS_PROPS.CAT_NAME }}">Kategorie</option>
-						<option value="{{ TARPS_PROPS.TYPE_NAME }}">Planen-Typ</option>
-						<option value="{{ TARPS_PROPS.DMG_CODE }}">Schaden</option>
-					</select>
+			<div class="table">
+				<div class="row header">
+					<div class="filter-label">Sortierung</div>
+					<div class="filter-value">Absteigend</div>
 				</div>
-				<div class="filter-value">
-					<input type="checkbox" id="order_dir_{{ loop.index0 }}" name="order_dir_{{ loop.index0 }}" />
+				{% for o in selection.sequence %}
+				<div class="row filter">
+					<div class="filter-label">
+						<select id="order_by_{{ loop.index0 }}" name="order_by_{{ loop.index0 }}">
+							<option value="None">-- unsortiert --</option>
+							<option value="{{ TARPS_PROPS.TARP_NUMBER }}">Nummer</option>
+							<option value="{{ TARPS_PROPS.CAT_NAME }}">Kategorie</option>
+							<option value="{{ TARPS_PROPS.TYPE_NAME }}">Planen-Typ</option>
+							<option value="{{ TARPS_PROPS.DMG_CODE }}">Schaden</option>
+						</select>
+					</div>
+					<div class="filter-value">
+						<input type="checkbox" id="order_dir_{{ loop.index0 }}" name="order_dir_{{ loop.index0 }}" />
+					</div>
 				</div>
+				{% endfor %}
 			</div>
-			{% endfor %}
-		</div>
-		<div class="table">
-			<div class="row filter">
-				<div class="buttons">
-					<button type="submit">Aktualisieren</button>
+			<div class="table">
+				<div class="row filter">
+					<div class="buttons">
+						<button type="submit">Aktualisieren</button>
+					</div>
 				</div>
 			</div>
-		</div>
-	</form>
+		</form>
+	</div>
 	<div class="table">
 		<div class="row header">
 			<div class="numeric number">Nr.</div>
@@ -83,8 +78,9 @@
 		</div>
 		{% endfor %}
 	</div>
-</body>
-<script lang="JavaScript">
+{% endblock %}
+
+{% block script %}
 	function select_value(id, value) {
 		var combo = document.getElementById(id);
 
@@ -125,6 +121,5 @@
 	select_value("order_by_{{ loop.index0 }}", "{{ o.property }}");
 	check_value("order_dir_{{ loop.index0 }}", "{{ o.is_descending }}");
 	{% endfor %}
-</script>
 
-</html>
+{% endblock %}

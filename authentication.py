@@ -71,3 +71,4 @@ def login():
 @authentication_api.route(LOGOUT_ENDPOINT, methods = ['GET'])
 def logout():
 	session.clear()
+	return redirect(url_for(ROOT_ACTION))

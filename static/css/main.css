@@ -8,8 +8,7 @@
 
 body {
 	font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-	display: flex;
-	justify-content: center;
+	margin: 0px;
 }
 
 form {
@@ -24,6 +23,38 @@ button {
 	border-radius: 0.2em;
 	padding: 0.2rem 1rem;
 	min-width: 10em;
+}
+
+button:hover {
+	color: var(--folke-yellow);
+}
+
+button:active {
+	color: var(--folke-blue);
+	background-color: var(--folke-yellow);
+	font-weight: bold;
+}
+
+.menu {
+	display: flex;
+	background-color: var(--folke-blue);
+	justify-content: right;
+}
+
+.menu > div {
+	color: var(--folke-white);
+	padding: 0.6em;
+}
+
+.menu > .user {
+	font-weight: bold;
+}
+
+.content {
+	background-color: var(--folke-white);
+	display: grid;
+	justify-content: center;
+	padding: 1em;
 }
 
 .row {

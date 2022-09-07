@@ -1,13 +1,5 @@
-<!DOCTYPE html>
-<html lang="de">
-
-<head>
-	<title>Anmeldung</title>
-	<meta name="viewport" content="width=device-width,initial-scale=1">
-	<link rel="stylesheet" href="/static/css/main.css" />
-</head>
-
-<body>
+{% extends "layout.html.jinja" %}
+{% block content %}
 	<form action="{{ ROUTING.LOGIN_ENDPOINT }}" method="post" class="login-form">
 		<div class="table">
 			<div class="row header">
@@ -36,5 +28,4 @@
 			</div>
 		</div>
 	</form>
-</body>
-</html>
+{% endblock %}

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+	{% block head %}
+	<title>Planen</title>
+	<meta name="viewport" content="width=device-width,initial-scale=1">
+	<link rel="stylesheet" href="/static/css/main.css" />
+	{% endblock %}
+</head>
+
+<body>
+	<div class="menu">
+		{% if auth_context is defined %}
+			<div class="user">
+				{% if auth_context.user.display is defined %}
+					{{ auth_context.user.display }}
+				{% else %}
+					{% if auth_context.user.name is defined %}
+						{{ auth_context.user.name }}
+					{% endif %}
+				{% endif %}
+			</div>
+			<div><button onclick="logout()">Abmelden</button></div>
+		{% else %}
+			<div><button onclick="login()">Anmelden</button></div>				
+		{% endif %}
+	</div>
+	<div class="content">
+		{% block content %}
+		{% endblock %}
+	</div>
+</body>
+<script lang="JavaScript">
+	function logout() {
+		window.location = "/logout"
+	}
+
+	function login() {
+		window.location = "/login"
+	}
+
+	{% block script %}
+	{% endblock %}
+</script>
+</html>
