@@ -4,6 +4,7 @@ from db_tools import constant
 from routing import *
 from werkzeug.local import LocalProxy
 from request_context import _request_context
+from authorization import authorize
 import logging
 
 request_context = LocalProxy(_request_context)
@@ -22,6 +23,7 @@ class UserApiProperties:
 USERAPI_PROPS = UserApiProperties()
 
 @user_api.route(CHANGE_PASSWORD_ENDPOINT, methods = ['GET', 'POST'])
+@authorize("user")
 def change_password():
 	authed_user = request_context.auth_context.user
 

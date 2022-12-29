@@ -10,6 +10,8 @@ CHANGE_PASSWORD_ACTION = "change_password"
 # Relative paths
 ROOT_ENDPOINT ="/"
 STATIC_ENDPOINT = "/static"
+FAVICON_REQUEST = "/favicon.ico"
+
 ROOT_ACTION = "list_tarps"
 
 LOGIN_ENDPOINT = "/" + LOGIN_ACTION
