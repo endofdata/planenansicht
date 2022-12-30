@@ -93,6 +93,22 @@ class User:
 			return False
 		return checkpw(b64encode(sha256(pwd.encode()).digest()), self.pwd_hash.encode())
 
+	def has_right(self, access):
+		"""Checks whether the user's rights contain the requested access
+		
+		Compares the AccessRight.Display of each item in rights with the specified access.
+
+		Args:
+			access: display value of requested access right
+
+		Returns:
+			True if a matching item was found, otherwise false
+		"""
+		for right in self.rights:
+			if right.display == access:
+				return True
+		return False
+
 class AccessRight:
 	"""Defines a permission for a certain program function
 

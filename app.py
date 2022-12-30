@@ -15,8 +15,17 @@ import logging
 from sys import exc_info
 
 # TODO: Move to separate source
-def authorize_user(request_context, method):
-	return AuthorizationResult.FORBIDDEN
+def authorize_user(request_context, access):
+	usr = request_context.auth_context.user
+
+	if usr == None:
+		return AuthorizationResult.FORBIDDEN
+	
+	if access != None:
+		if not usr.has_right(access):
+			return AuthorizationResult.FORBIDDEN
+
+	return AuthorizationResult.NONE
 
 # Debug helper: if you want to create a new password 
 # usr = User(0, "Master", "The master of desaster", None, None)

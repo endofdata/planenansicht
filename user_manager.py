@@ -23,7 +23,7 @@ class UserApiProperties:
 USERAPI_PROPS = UserApiProperties()
 
 @user_api.route(CHANGE_PASSWORD_ENDPOINT, methods = ['GET', 'POST'])
-@authorize("user")
+@authorize("user", access="ChangePassword")
 def change_password():
 	authed_user = request_context.auth_context.user
 
