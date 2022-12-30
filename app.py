@@ -1,9 +1,9 @@
 from environment import env
 from flask import Flask, render_template, request, session, redirect, url_for
 from tarps_context import TARPS_PROPS
-from entities import Selector
-from entities import Order
-from entities import Selection
+from selection import Selector
+from selection import Order
+from selection import Selection
 from entities import User;
 from user_manager import user_api
 from authentication import authentication_api, authenticate
@@ -15,15 +15,9 @@ import logging
 from sys import exc_info
 
 # TODO: Move to separate source
-def authorize_user(request_context):
+def authorize_user(request_context, method):
 	return AuthorizationResult.FORBIDDEN
 
-def authorize_guest(request_context):
-	return AuthorizationResult.ALLOW
-
-def authorize_anonymous(request_context):
-	return AuthorizationResult.ALLOW
-	
 # Debug helper: if you want to create a new password 
 # usr = User(0, "Master", "The master of desaster", None, None)
 # pwd = usr.encrypt_pwd("master")
@@ -39,10 +33,8 @@ app.secret_key = env.get_secret_key()
 app.register_blueprint(authentication_api)
 app.register_blueprint(user_api)
 
-# TODO: how to pass a collection of lambdas?
-register_policy(AuthorizationPolicy("user", [authorize_user]))
-register_policy(AuthorizationPolicy("guest", [authorize_guest]))
-register_policy(AuthorizationPolicy("anonymous", [authorize_anonymous]))
+register_policy(AuthorizationPolicy("user", [ authorize_user]))
+register_policy(AuthorizationPolicy("guest", [lambda context: AuthorizationResult.ALLOW]))
 
 if __name__ == '__main__':
 	app.run(use_debugger=False, use_reloader=False, passthrough_errors=True)
@@ -61,15 +53,6 @@ def app_teardown_request(err):
 			_request_context.set(None)
 		except:
 			logging.error(exc_info())
-
-def authn_required(request) -> bool:
-	path = request.path
-	if path.startswith(STATIC_ENDPOINT):
-		return False
-	if path == FAVICON_REQUEST:
-		return False
-	return True
-
 
 @app.route(ROOT_ENDPOINT, methods = ['GET'])
 @authorize("guest")
@@ -98,7 +81,7 @@ def list_tarp_by():
 	for id in range(env.max_selectors):
 		prop = request.form[f"select_by_{id}"]
 		if prop != "None":
-			value_list = split_values(request.form[f"select_value_{id}"])
+			value_list = request.form[f"select_value_{id}"].split()
 			is_pattern = db_context.is_pattern_property(prop)
 			selectors.append(Selector(prop, value_list, is_pattern))
 		else:
@@ -117,9 +100,6 @@ def list_tarp_by():
 	tarp_list = db_context.select(selection)
 		
 	return render_tarp_list(tarp_list, selection)
-
-def split_values(text):
-	return text.split()
 
 def render_tarp_list(tarp_list, selection):
 	return render_template("tarps_list.html.jinja", tarp_list=tarp_list, selection=selection, 

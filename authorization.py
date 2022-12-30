@@ -24,9 +24,9 @@ class AuthorizationPolicy:
 		self.name = name
 		self.handlers = handlers
 
-	def execute(self):
+	def execute(self, *args, **kwargs):
 		for handler in self.handlers:
-			authz_result = handler(request_context)
+			authz_result = handler(request_context, *args, **kwargs)
 			if authz_result == AuthorizationResult.FORBIDDEN:
 				return authz_result
 			elif authz_result == AuthorizationResult.ALLOW:
@@ -38,12 +38,12 @@ __policies__ = dict()
 def register_policy(policy):
 	__policies__[policy.name] = policy
 
-def authorize(policy):
+def authorize(policy, *args, **kwargs):
 	def authorize_decorator(func):
 		@wraps(func)
 		def func_wrapper():
 			if policy in __policies__:
-				authz_result = __policies__[policy].execute()
+				authz_result = __policies__[policy].execute(*args, **kwargs)
 				if authz_result == AuthorizationResult.FORBIDDEN:
 					abort(403)
 				else:
