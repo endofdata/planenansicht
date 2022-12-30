@@ -1,8 +1,9 @@
 from user_context import UserContext
 from tarps_context import TarpsContext
 from environment import env;
-
+from flask import render_template
 from contextvars import ContextVar
+from routing import ROUTING
 
 _request_context = ContextVar("request_context")
 
@@ -45,3 +46,6 @@ class RequestContext:
 			object.__setattr__(self, name, value)
 		else:
 			raise AttributeError(f"Attribute '{name}' cannot be set.")
+
+	def view_result(self, name, **kwargs):
+		return render_template(name, ROUTING=ROUTING, auth_context=self.auth_context, **kwargs)

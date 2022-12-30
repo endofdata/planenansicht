@@ -32,7 +32,17 @@ class UserProperties:
 	def RIGHT_DSP():
 		return "right_dsp"
 
+class AccessRightProperties:
+	@constant
+	def ID():
+		return "id"
+
+	@constant
+	def DISPLAY():
+		return "display"
+	
 USER_PROPS = UserProperties()
+ACCRIGHT_PROPS = AccessRightProperties()
 
 class UserContext:
 	def __init__(self, db_path):
@@ -46,6 +56,48 @@ class UserContext:
 			logging.info(f"closing connection to '{self.db_path}'.")
 			self.connection.close()
 
+	# Not tested yet
+	def add_user(self, name) -> User:
+		statement = "INSERT INTO Users (Name) VALUES('?');"
+
+		with self.__get_connection__() as con:
+			cur = con.execute(statement, (name,))
+
+			if cur.rowcount != 1:
+				raise ValueError(f"Expected one row to be added but was {cur.rowcount}")
+
+		return self.get_user_by_name(self, name)
+
+	def get_access_rights(self):
+		con = self.__get_connection__()
+		cur = con.cursor()
+
+		statement = "SELECT Id, Display FROM AccessRights"
+
+		for row in cur.execute(statement):
+			yield AccessRight(row[ACCRIGHT_PROPS.ID], row[ACCRIGHT_PROPS.DISPLAY])
+
+
+	def update_master(self):
+		master = self.get_user_by_name("Master")
+
+		if master == None:
+			master = self.add_user("Master")
+
+		for right in self.get_access_rights():
+			if not master.has_right(right.display):
+				self.add_user_right(master.id, right.id)
+
+
+	def add_user_right(self, user_id, right_id):
+		statement = "INSERT INTO UserRights (UserId, RightId) VALUES (?, ?)"
+
+		with self.__get_connection__() as con:
+			cur = con.execute(statement, (user_id, right_id,))
+
+			if cur.rowcount != 1:
+				raise ValueError(f"Expected one row to change but was {cur.rowcount}")
+
 	def get_user_by_id(self, id) -> User:
 		return self.get_single_user_where(f"{USER_PROPS.USER_ID} == {id}")
 
@@ -54,14 +106,13 @@ class UserContext:
 
 	def get_single_user_where(self, predicate) -> User:
 		user_list = self.get_users_where(predicate)
-		user_count = len(user_list)
 
-		if user_count == 1:
-			return user_list[0]
-		elif user_count == 0:
-			return None
-		else:
-			raise ValueError(f"get_users_where('{predicate}') returned {user_count} results.")
+		user = next(user_list)
+
+		if next(user_list, None) != None:
+			raise ValueError(f"get_users_where('{predicate}') returned multiple results.")
+
+		return user
 			
 	def get_users_where(self, predicate):
 		con = self.__get_connection__()
@@ -99,9 +150,7 @@ class UserContext:
 
 		if user != None:
 			user.rights = rights
-			user_list.append(user)
-
-		return user_list
+			yield user
 
 	def change_password(self, user, pwd):
 		if user == None:

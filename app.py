@@ -1,5 +1,5 @@
 from environment import env
-from flask import Flask, render_template, request, session, redirect, url_for
+from flask import Flask, request
 from tarps_context import TARPS_PROPS
 from selection import Selector
 from selection import Order
@@ -111,5 +111,4 @@ def list_tarp_by():
 	return render_tarp_list(tarp_list, selection)
 
 def render_tarp_list(tarp_list, selection):
-	return render_template("tarps_list.html.jinja", tarp_list=tarp_list, selection=selection, 
-		TARPS_PROPS=TARPS_PROPS, ROUTING=ROUTING, auth_context=request_context.auth_context)
+	return request_context.view_result("tarps_list.html.jinja", tarp_list=tarp_list, selection=selection, TARPS_PROPS=TARPS_PROPS)

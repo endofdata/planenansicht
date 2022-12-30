@@ -1,9 +1,7 @@
-from flask import Blueprint, render_template, request, session, redirect, url_for
-from user_context import USER_PROPS, UserContext
-from environment import env
+from flask import Blueprint, request, session, redirect, url_for
+from user_context import USER_PROPS
 from werkzeug.local import LocalProxy
 from request_context import _request_context
-from authorization import authorize
 from routing import *
 import logging
 
@@ -49,7 +47,7 @@ def authenticate():
 @authentication_api.route(LOGIN_ENDPOINT, methods = ['GET', 'POST'])
 def login():
 	if request.method == "GET" or request.form[USER_PROPS.USER_NAME] == None:
-		return render_template("login.html.jinja", USER_PROPS=USER_PROPS, ROUTING=ROUTING, auth_context=request_context.auth_context)
+		return request_context.view_result("login.html.jinja", USER_PROPS=USER_PROPS)
 	else:
 		user_name = request.form[USER_PROPS.USER_NAME]
 		redir = None

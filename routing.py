@@ -6,6 +6,7 @@ LOGOUT_ACTION = "logout"
 # Actions in user management area
 USER_API_AREA = "/user"
 CHANGE_PASSWORD_ACTION = "change_password"
+UPDATE_MASTER_ACTION = "update_master"
 
 # Relative paths
 ROOT_ENDPOINT ="/"
@@ -17,6 +18,7 @@ ROOT_ACTION = "list_tarps"
 LOGIN_ENDPOINT = "/" + LOGIN_ACTION
 LOGOUT_ENDPOINT = "/" + LOGOUT_ACTION
 CHANGE_PASSWORD_ENDPOINT = USER_API_AREA + "/" + CHANGE_PASSWORD_ACTION
+UPDATE_MASTER_ENDPOINT = USER_API_AREA + "/" + UPDATE_MASTER_ACTION
 
 # API route names
 AUTH_API_NAME = "authentication_api"

@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, redirect, url_for
+from flask import Blueprint, request, redirect, url_for
 from environment import env
 from db_tools import constant
 from routing import *
@@ -31,11 +31,11 @@ def change_password():
 		raise ValueError("WTF are we doing here=")
 
 	if request.method == 'GET':
-		return render_template("change_pwd.html.jinja", USERAPI_PROPS=USERAPI_PROPS, ROUTING=ROUTING)		
+		return request_context.view_result("change_pwd.html.jinja", USERAPI_PROPS=USERAPI_PROPS)		
 	else:
 		new_pwd = request.form[USERAPI_PROPS.NEW_PASSWORD]
 		if new_pwd != request.form[USERAPI_PROPS.REP_PASSWORD]:
-			return render_template("change_pwd.html.jinja", USERAPI_PROPS=USERAPI_PROPS, ROUTING=ROUTING)		
+			return request_context.view_result("change_pwd.html.jinja", USERAPI_PROPS=USERAPI_PROPS)		
 
 		user_context = request_context.user_context
 		user_context.change_password(authed_user, new_pwd)
@@ -43,3 +43,12 @@ def change_password():
 		logging.info(f"changed password for user '{authed_user.name}'")
 		logging.info(f"redirecting to '{AUTH_LOGIN}'.")
 		return redirect(url_for(AUTH_LOGIN))
+
+
+@user_api.route(UPDATE_MASTER_ENDPOINT, methods = ['GET'])
+def update_master():
+	logging.info("updating master account")
+	user_context = request_context.user_context
+	user_context.update_master()
+	return redirect(url_for(AUTH_LOGIN))
+
