@@ -47,7 +47,6 @@ def authenticate():
 	# 	return redirect(url_for(AUTH_LOGIN))		
 
 @authentication_api.route(LOGIN_ENDPOINT, methods = ['GET', 'POST'])
-@authorize("anonymous")
 def login():
 	if request.method == "GET" or request.form[USER_PROPS.USER_NAME] == None:
 		return render_template("login.html.jinja", USER_PROPS=USER_PROPS, ROUTING=ROUTING, auth_context=request_context.auth_context)
@@ -76,7 +75,6 @@ def login():
 		return redirect(url_for(redir))
 
 @authentication_api.route(LOGOUT_ENDPOINT, methods = ['GET'])
-#@authorize("user")
 def logout():
 	session.clear()
 	return redirect(url_for(ROOT_ACTION))
