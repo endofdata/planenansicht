@@ -81,45 +81,5 @@
 {% endblock %}
 
 {% block script %}
-	function select_value(id, value) {
-		var combo = document.getElementById(id);
-
-		if (combo) {
-			for (idx in combo.options) {
-				opt = combo.options[idx];
-				if (opt.value === value) {
-					opt.selected = true;
-					break;
-				}
-			}
-		}
-	}
-
-	function check_value(id, value) {
-		var checkbox = document.getElementById(id);
-
-		if (checkbox) {
-			checkbox.checked = value == 'True';
-		}
-	}
-
-	function set_value(id, value) {
-		var textbox = document.getElementById(id);
-
-		if (textbox) {
-			textbox.value = value;
-		}
-	}
-
-	{% for s in selection.selectors %}
-	select_value("select_by_{{ loop.index0 }}", "{{ s.property }}");
-	{% if s.values %}
-	set_value("select_value_{{ loop.index0 }}", "{{ s.values | join(' ') }}");
-	{% endif %}
-	{% endfor %}
-	{% for o in selection.sequence %}
-	select_value("order_by_{{ loop.index0 }}", "{{ o.property }}");
-	check_value("order_dir_{{ loop.index0 }}", "{{ o.is_descending }}");
-	{% endfor %}
-
+	{% include 'selection_script.jinja' %}
 {% endblock %}
