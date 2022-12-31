@@ -21,6 +21,7 @@
 					{% endif %}
 				{% endif %}
 			</div>
+			<div><button onclick="admin_menu()">Verwaltung</button></div>
 			<div><button onclick="logout()">Abmelden</button></div>
 		{% else %}
 			<div><button onclick="login()">Anmelden</button></div>				
@@ -30,7 +31,6 @@
 		{% block content %}
 		{% endblock %}
 	</div>
-</body>
 <script lang="JavaScript">
 	function logout() {
 		window.location = "/logout"
@@ -40,7 +40,12 @@
 		window.location = "/login"
 	}
 
+	function admin_menu() {
+		window.location = "/admin/menu"
+	}
+
 	{% block script %}
 	{% endblock %}
 </script>
+</body>
 </html>
