@@ -6,6 +6,7 @@ from selection import Order
 from selection import Selection
 from entities import User;
 from user_manager import user_api
+from admin_api import admin_api
 from authentication import authentication_api, authenticate
 from authorization import AuthorizationPolicy, AuthorizationResult, authorize, register_policy
 from routing import *
@@ -21,9 +22,8 @@ def authorize_user(request_context, access):
 	if usr == None:
 		return AuthorizationResult.FORBIDDEN
 	
-	if access != None:
-		if not usr.has_right(access):
-			return AuthorizationResult.FORBIDDEN
+	if (access != None) and (usr.has_right(access)):
+			return AuthorizationResult.ALLOW
 
 	return AuthorizationResult.NONE
 
@@ -41,6 +41,7 @@ app = Flask(__name__)
 app.secret_key = env.get_secret_key()
 app.register_blueprint(authentication_api)
 app.register_blueprint(user_api)
+app.register_blueprint(admin_api)
 
 register_policy(AuthorizationPolicy("user", [ authorize_user]))
 register_policy(AuthorizationPolicy("guest", [lambda context: AuthorizationResult.ALLOW]))
