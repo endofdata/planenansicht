@@ -1,0 +1,21 @@
+{% extends "layout.html.jinja" %}
+
+{% block content %}
+<table class="zebra-list" style="min-width:25em;margin-left:auto;margin-right:auto">
+	<thead>
+		<tr>
+			<th>Name</th>
+			<th>Anzeige-Name</th>
+		</tr>
+	</thead>
+	<tbody>
+		{% for user in user_list %}
+		<tr class="row item">
+			<td>{{ user.name }}</td>
+			<td>{{ user.display }}</td>
+		</tr>
+		{% endfor %}
+	</tbody>
+</table>
+
+{% endblock %}

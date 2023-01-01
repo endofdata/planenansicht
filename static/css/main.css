@@ -134,3 +134,12 @@ table.filter {
 table.filter tr {
 	grid-template-columns: 1fr 2fr;
 }
+
+table.zebra-list tr:nth-of-type(odd) {
+	background: #eee;
+}
+
+table.zebra-list td,
+table.zebra-list th {
+	border: 1px solid #ccc;
+}

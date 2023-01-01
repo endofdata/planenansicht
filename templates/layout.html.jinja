@@ -24,7 +24,8 @@
 				{% endif %}
 			</div>
 			<div><button onclick="logout()">Abmelden</button></div>
-			<div><button onclick="admin_menu()">Verwaltung</button></div>
+			<div><button onclick="user_list()">Benutzer</button></div>
+			<div><button onclick="tarps_list()">Planen</button></div>
 		{% else %}
 			<div><button onclick="login()">Anmelden</button></div>				
 		{% endif %}
@@ -42,8 +43,12 @@
 		window.location = "{{ ROUTING.LOGIN_ENDPOINT }}"
 	}
 
-	function admin_menu() {
+	function user_list() {
 		window.location = "{{ ROUTING.LIST_USERS_ENDPOINT }}"
+	}
+
+	function tarps_list() {
+		window.location = "{{ ROUTING.ROOT_ENDPOINT }}"
 	}
 
 	{% block script %}
