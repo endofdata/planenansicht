@@ -18,11 +18,11 @@ def update_master():
 	return redirect(url_for(AUTH_LOGIN))
 
 @admin_api.route(LIST_USERS_ENDPOINT, methods = ['GET'])
-@authorize("user", access="ListUsers")	
+@authorize("user", access="EditUsers")	
 def list_users():
 	user_context = request_context.user_context
 	user_list = user_context.get_users_where("TRUE")
-	return request_context.view_result("users_list.html.jinja", user_list = user_list)		
+	return request_context.view_result("user_list.html.jinja", user_list = user_list)		
 
 
 @admin_api.route(ADD_USER_ENDPOINT, methods = ['GET', 'POST'])
