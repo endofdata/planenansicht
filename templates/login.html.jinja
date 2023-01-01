@@ -1,31 +1,35 @@
 {% extends "layout.html.jinja" %}
 {% block content %}
-	<form action="{{ ROUTING.LOGIN_ENDPOINT }}" method="post" class="login-form">
-		<div class="table">
-			<div class="row header">
-				<span>Anmeldung</span>
-			</div>
-			<div class="row">
-				<div class="label">Benutzer</div>
-			</div>
-			<div class="row">
-				<div class="label">
-					<input name="{{ USER_PROPS.USER_NAME }}" id="{{ USER_PROPS.USER_NAME }}"/>
-				</div>
-			</div>
-			<div class="row">
-				<div class="label">Passwort</div>
-			</div>
-			<div class="row">
-				<div class="label">
-					<input name="{{ USER_PROPS.USER_PASSWORD }}" id="{{ USER_PROPS.USER_PASSWORD }}" type="password"/>
-				</div>
-			</div>
-			<div class="row">
-				<div class="buttons">
+<form action="{{ ROUTING.LOGIN_ENDPOINT }}" method="post" class="login-form">
+	<table class="dialog">
+		<thead>
+			<tr>
+				<th>Anmeldung</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<td class="label">Benutzer</td>
+			</tr>
+			<tr class="row">
+				<td>
+					<input name="{{ USER_PROPS.USER_NAME }}" id="{{ USER_PROPS.USER_NAME }}" />
+				</td>
+			</tr>
+			<tr>
+				<td class="label">Passwort</td>
+			</tr>
+			<tr>
+				<td>
+					<input name="{{ USER_PROPS.USER_PASSWORD }}" id="{{ USER_PROPS.USER_PASSWORD }}" type="password" />
+				</td>
+			</tr>
+			<tr class="buttonpanel">
+				<td>
 					<button type="submit">Anmelden</button>
-				</div>
-			</div>
-		</div>
-	</form>
+				</td>
+			</tr>
+		</tbody>
+	</table>
+</form>
 {% endblock %}

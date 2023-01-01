@@ -62,48 +62,26 @@ table {
 	border-collapse: collapse;
 }
 
-/* Zebra striping */
-tr:nth-of-type(odd) {
-	background: #eee;
-}
-
 th {
-	background: #333;
-	color: white;
-	font-weight: bold;
+	background: var(--folke-blue);
+	color: var(--folke-white);
+	font-weight: 600;
 }
 
 td,
 th {
-	padding: 6px;
-	border: 1px solid #ccc;
+	padding: 2px;
 	text-align: left;
 	vertical-align: top;
+}
+
+div.table {
+	display: grid;
 }
 
 .header {
 	background-color: var(--folke-blue);
 	color: white;
-}
-
-.filter-label {
-	width: 30%;
-}
-
-.filter-value {
-	width: 70%;
-}
-
-.filter {
-	background-color: var(--folke-yellow);
-}
-
-.buttons {
-	display: flex;
-	width: 100%;
-	padding: 0.4em;
-	justify-content: center;
-	align-items: center;
 }
 
 .login-form {
@@ -119,9 +97,40 @@ th {
 .label {
 	color: var(--folke-blue);
 	font-weight: bold;
-	margin: 0.2em 1em 0em 1em;
 }
 
 .login-form .buttons {
 	padding: 1em;
+}
+
+table.dialog {	
+	margin-left: auto;
+	margin-right: auto;
+}
+
+table.dialog tr {
+	display: grid;
+	background-color: var(--folke-yellow);
+}
+
+table.dialog td {
+	margin: auto 10px;
+}
+
+table.dialog tr.buttonpanel {
+	display: grid;
+	grid-template-columns: auto;
+	padding: 4px;
+}
+
+table.dialog tr.buttonpanel td {
+	text-align: center;
+}
+
+table.filter {
+	min-width: 50vw;
+}
+
+table.filter tr {
+	grid-template-columns: 1fr 2fr;
 }

@@ -5,16 +5,19 @@
 {% endblock %}
 
 {% block content %}
-	<div class="table">
-		<form action="{{ ROUTING.ROOT_ENDPOINT }}" method="post">
-			<div class="table">
-				<div class="row header">
-					<div class="filter-label">Filter</div>
-					<div class="filter-value">Wert</div>
-				</div>
+<div>
+	<form action="{{ ROUTING.ROOT_ENDPOINT }}" method="post">
+		<table class="dialog filter">
+			<thead>
+				<tr>
+					<th>Filter</th>
+					<th>Wert</th>
+				</tr>
+			</thead>
+			<tbody>
 				{% for s in selection.selectors %}
-				<div class="row filter">
-					<div class="filter-label">
+				<tr>
+					<td>
 						<select id="select_by_{{ loop.index0 }}" name="select_by_{{ loop.index0 }}">
 							<option value="None">- alle -</option>
 							<option value="{{ TARPS_PROPS.TARP_NUMBER }}">Nummer</option>
@@ -22,21 +25,19 @@
 							<option value="{{ TARPS_PROPS.TYPE_NAME }}">Planen-Typ</option>
 							<option value="{{ TARPS_PROPS.DMG_CODE }}">Schaden</option>
 						</select>
-					</div>
-					<div class="filter-value">
+					</td>
+					<td>
 						<input id="select_value_{{ loop.index0 }}" name="select_value_{{ loop.index0 }}" />
-					</div>
-				</div>
+					</td>
+				</tr>
 				{% endfor %}
-			</div>
-			<div class="table">
-				<div class="row header">
-					<div class="filter-label">Sortierung</div>
-					<div class="filter-value">Absteigend</div>
-				</div>
+				<tr>
+					<th>Sortierung</th>
+					<th>Absteigend</th>
+				</tr>
 				{% for o in selection.sequence %}
-				<div class="row filter">
-					<div class="filter-label">
+				<tr>
+					<td>
 						<select id="order_by_{{ loop.index0 }}" name="order_by_{{ loop.index0 }}">
 							<option value="None">-- unsortiert --</option>
 							<option value="{{ TARPS_PROPS.TARP_NUMBER }}">Nummer</option>
@@ -44,23 +45,20 @@
 							<option value="{{ TARPS_PROPS.TYPE_NAME }}">Planen-Typ</option>
 							<option value="{{ TARPS_PROPS.DMG_CODE }}">Schaden</option>
 						</select>
-					</div>
-					<div class="filter-value">
+					</td>
+					<td>
 						<input type="checkbox" id="order_dir_{{ loop.index0 }}" name="order_dir_{{ loop.index0 }}" />
-					</div>
-				</div>
+					</td>
+				</tr>
 				{% endfor %}
-			</div>
-			<div class="table">
-				<div class="row filter">
-					<div class="buttons">
-						<button type="submit">Aktualisieren</button>
-					</div>
-				</div>
-			</div>
-		</form>
-	</div>
-	<table class="tarps-list">
+				<tr class="buttonpanel">
+					<td><button type="submit">Aktualisieren</button></td>
+				</tr>
+			</tbody>
+		</table>
+	</form>
+</div>
+<table class="tarps-list">
 	<thead>
 		<tr>
 			<th class="numeric">Nr.</th>
@@ -84,10 +82,10 @@
 			</td>
 		</tr>
 		{% endfor %}
-		</tbody>
-	</table>
+	</tbody>
+</table>
 {% endblock %}
 
 {% block script %}
-	{% include 'selection_script.jinja' %}
+{% include 'selection_script.jinja' %}
 {% endblock %}
