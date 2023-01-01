@@ -1,6 +1,7 @@
 from flask import Blueprint, request, redirect, url_for
 from environment import env
 from db_tools import constant
+from user_context import USER_PROPS
 from routing import *
 from werkzeug.local import LocalProxy
 from request_context import _request_context
@@ -43,12 +44,4 @@ def change_password():
 		logging.info(f"changed password for user '{authed_user.name}'")
 		logging.info(f"redirecting to '{AUTH_LOGIN}'.")
 		return redirect(url_for(AUTH_LOGIN))
-
-
-@user_api.route(UPDATE_MASTER_ENDPOINT, methods = ['GET'])
-def update_master():
-	logging.info("updating master account")
-	user_context = request_context.user_context
-	user_context.update_master()
-	return redirect(url_for(AUTH_LOGIN))
 
