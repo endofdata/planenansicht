@@ -1,3 +1,4 @@
+<script>
 	function select_value(id, value) {
 		var combo = document.getElementById(id);
 
@@ -38,3 +39,4 @@
 	select_value("order_by_{{ loop.index0 }}", "{{ o.property }}");
 	check_value("order_dir_{{ loop.index0 }}", "{{ o.is_descending }}");
 	{% endfor %}
+</script>
