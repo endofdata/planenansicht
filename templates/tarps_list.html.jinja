@@ -1,5 +1,9 @@
 {% extends "layout.html.jinja" %}
 
+{% block styles %}
+<link rel="stylesheet" href="/static/css/tarps_list.css" />
+{% endblock %}
+
 {% block content %}
 	<div class="table">
 		<form action="{{ ROUTING.ROOT_ENDPOINT }}" method="post">
@@ -56,28 +60,32 @@
 			</div>
 		</form>
 	</div>
-	<div class="table">
-		<div class="row header">
-			<div class="numeric number">Nr.</div>
-			<div class="type">Typ</div>
-			<div class="category">Kat.</div>
-			<div class="annotation">Anmerkung</div>
-			<div class="damages">Schaden</div>
-		</div>
+	<table class="tarps-list">
+	<thead>
+		<tr>
+			<th class="numeric">Nr.</th>
+			<th>Typ</th>
+			<th>Kat.</th>
+			<th>Anmerkung</th>
+			<th>Schaden</th>
+		</tr>
+	</thead>
+	<tbody>
 		{% for tarp in tarp_list %}
-		<div class="row item">
-			<div class="numeric number">{{ tarp.number }}</div>
-			<div class="type">{{ tarp.category.tarp_type.name }}</div>
-			<div class="category">{{ tarp.category.name }}</div>
-			<div class="annotation">{{ tarp.annotation }}</div>
-			<div class="damages">
+		<tr>
+			<td class="numeric">{{ tarp.number }}</td>
+			<td>{{ tarp.category.tarp_type.name }}</td>
+			<td>{{ tarp.category.name }}</td>
+			<td>{{ tarp.annotation }}</td>
+			<td>
 				{% for dmg in tarp.damages %}
 				{{ dmg.code }}
 				{% endfor %}
-			</div>
-		</div>
+			</td>
+		</tr>
 		{% endfor %}
-	</div>
+		</tbody>
+	</table>
 {% endblock %}
 
 {% block script %}

@@ -9,6 +9,7 @@
 body {
 	font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 	margin: 0px;
+	min-width: 320px;
 }
 
 form {
@@ -53,62 +54,36 @@ button:active {
 .content {
 	background-color: var(--folke-white);
 	display: grid;
-	justify-content: center;
+	justify-content: stretch;
 	padding: 1em;
 }
 
-.row {
-	display: flex;
-	flex-wrap: wrap;
+table {
+	border-collapse: collapse;
 }
 
-.row > * {
-	padding: 0.2rem 0.3rem;
+/* Zebra striping */
+tr:nth-of-type(odd) {
+	background: #eee;
+}
+
+th {
+	background: #333;
+	color: white;
+	font-weight: bold;
+}
+
+td,
+th {
+	padding: 6px;
+	border: 1px solid #ccc;
 	text-align: left;
-	box-sizing: border-box;
-	width: 100%;
+	vertical-align: top;
 }
 
-.item {
-	border: 1px solid var(--folke-blue);
-	border-radius: 0.2rem;
-	margin: 0.2rem 0rem;
-}
-
-.header > * {
+.header {
 	background-color: var(--folke-blue);
 	color: white;
-}
-
-.numeric {
-	text-align: right;
-}
-
-.number {
-	flex-grow: 1;
-	flex-basis: 4ch;
-	width: 5%;
-}
-
-.type {
-	flex-grow: 6;
-	flex-basis: 16ch;
-	width: 30%;
-}
-
-.category {
-	flex-grow: 2;
-	width: 10%;
-}
-
-.annotation {
-	flex-grow: 8;
-	width: 40%;
-}
-
-.damages {
-	flex-grow: 3;
-	width: 15%;
 }
 
 .filter-label {
@@ -134,6 +109,7 @@ button:active {
 .login-form {
 	display: flex;
 	justify-content: center;
+	justify-self: center;
 	background-color: var(--folke-yellow);
 	border: 2px solid var(--folke-blue);
 	width: fit-content;

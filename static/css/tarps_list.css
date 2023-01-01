@@ -1,0 +1,4 @@
+
+table.tarps-list tr {
+	grid-template-columns: 1fr 4fr 2fr 8fr 3fr;
+}
