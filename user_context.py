@@ -139,7 +139,7 @@ class UserContext:
 				last_id = user_id
 				if user != None:
 					user.rights = rights
-					user_list.append(user)
+					yield user
 					rights = []
 
 				user = User(row[USER_PROPS.USER_ID], row[USER_PROPS.USER_NAME], row[USER_PROPS.USER_DSP], row[USER_PROPS.USER_PWDHASH], rights)
