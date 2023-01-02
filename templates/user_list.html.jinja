@@ -6,16 +6,76 @@
 		<tr>
 			<th>Name</th>
 			<th>Anzeige-Name</th>
+			<th></th>
+			<th></th>
 		</tr>
 	</thead>
 	<tbody>
 		{% for user in user_list %}
-		<tr class="row item">
+		<tr>
 			<td>{{ user.name }}</td>
 			<td>{{ user.display }}</td>
+			<td><button onclick="edit_user('{{ user.id }}')">Bearbeiten</button></td>
+			<td><button onclick="delete_user('{{ user.id }}')">Löschen</button></td>
 		</tr>
 		{% endfor %}
+		<tr>
+			<td><input id="name" /></td>
+			<td><input id="display" /></td>
+			<td><button onclick="add_user()">Anlegen</button></td>
+			<td></td>
+		</tr>
 	</tbody>
 </table>
 
+<dialog id="dglConfirmDelete">
+	<form method="dialog">
+		<p>Soll der Eintrag tatsächlich gelöscht werden?</p>
+		<div>
+			<button value="cancel">Nein, stop!</button>
+			<button id="confirmBtn" value="default">Ja, sicher!</button>
+		</div>
+	</form>
+</dialog>
+
+<dialog id="dlgAbortAdd">
+	<form method="dialog">
+		<p>Es muss zumindest ein Benutzername angegeben werden</p>
+		<div>
+			<button id="confirmBtn" value="default">Ok</button>
+		</div>
+	</form>
+</dialog>
+{% endblock %}
+
+{% block script %}
+<script>
+	function edit_user(id) {
+		window.location = '{{ ROUTING.EDIT_USER_ENDPOINT }}?{{ USER_PROPS.USER_ID }}=' + id;
+	}
+
+	function delete_user(id) {
+		var dlg = document.getElementById('dglConfirmDelete');
+
+		dlg.addEventListener('close', () => {
+			window.location = '{{ ROUTING.DELETE_USER_ENDPOINT }}?{{ USER_PROPS.USER_ID }}=' + id;
+		});
+		dlg.showModal();
+	}
+
+	function add_user() {
+		var name = document.getElementById('{{ USER_PROPS.USER_NAME }}').value;
+
+		if (name === "") {
+			var dlg = document.getElementById('dlgAbortAdd');
+
+			dlg.addEventListener('close', () => { });
+			dlg.showModal();
+		}
+		else {
+			var display = document.getElementById('{{ USER_PROPS.USER_DSP }}').value;
+			window.location = '{{ ROUTING.ADD_USER_ENDPOINT }}?{{ USER_PROPS.USER_NAME }}=' + name + '&{{ USER_PROPS.USER_DSP }}=' + display;
+		}
+	}
+</script>
 {% endblock %}

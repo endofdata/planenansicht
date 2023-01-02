@@ -139,7 +139,6 @@ table.zebra-list tr:nth-of-type(odd) {
 	background: #eee;
 }
 
-table.zebra-list td,
-table.zebra-list th {
+table.zebra-list td {
 	border: 1px solid #ccc;
 }

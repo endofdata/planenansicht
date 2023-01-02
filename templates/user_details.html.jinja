@@ -1,0 +1,87 @@
+{% extends "layout.html.jinja" %}
+
+{% block content %}
+
+<form method="POST" action="{{ ROUTING.EDIT_USER_ENDPOINT }}">
+	<input type="hidden" name="{{ USER_PROPS.USER_ID }}" value="{{ user.id }}"/>
+	<div class="formgroup">
+		<label for="{{ USER_PROPS.USER_NAME}}">Benutzer</label>
+		<input id="{{ USER_PROPS.USER_NAME}}" name="{{ USER_PROPS.USER_NAME}}" name="{{ USER_PROPS.USER_NAME}}" value="{{ user.name }}" />
+	</div>
+	<div class="formgroup">
+		<label for="{{ USER_PROPS.USER_DSP}}">Name</label>
+		<input id="{{ USER_PROPS.USER_DSP}}" name="{{ USER_PROPS.USER_DSP}}" value="{{ user.display }}" />
+	</div>
+	<div><button type="submit">Aktualisieren</button></div>
+</form>
+
+<form method="POST" action="{{ ROUTING.EDIT_USERRIGHTS_ENDPOINT }}">
+	<input type="hidden" name="{{ USER_PROPS.USER_ID}}" value="{{ user.id }}"/>
+	<table class="zebra-list">
+		<thead>
+			<tr>
+				<th>Tabelle</th>
+				<th>Anzeigen</th>
+				<th>Bearbeiten</th>
+				<th>Hinzufügen</th>
+				<th>Löschen</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<td>Planen</td>
+				<td><input type="checkbox" id="ViewTarps" name="ViewTarps" /></td>
+				<td><input type="checkbox" id="EditTarps" name="EditTarps" /></td>
+				<td><input type="checkbox" id="AddTarps" name="AddTarps" /></td>
+				<td><input type="checkbox" id="DeleteTarps" name="DeleteTarps" /></td>
+			</tr>
+			<tr>
+				<td>Planen-Typen</td>
+				<td><input type="checkbox" id="ViewTarpTypes" name="ViewTarpTypes" /></td>
+				<td><input type="checkbox" id="EditTarpTypes" name="EditTarpTypes" /></td>
+				<td><input type="checkbox" id="AddTarpTypes" name="AddTarpTypes" /></td>
+				<td><input type="checkbox" id="DeleteTarpTypes" name="DeleteTarpTypes" /></td>
+			</tr>
+			<tr>
+				<td>Kategorien</td>
+				<td><input type="checkbox" id="ViewCategories" name="ViewCategories" /></td>
+				<td><input type="checkbox" id="EditCategories" name="EditCategories" /></td>
+				<td><input type="checkbox" id="AddCategories" name="AddCategories" /></td>
+				<td><input type="checkbox" id="DeleteCategories" name="DeleteCategories" /></td>
+			</tr>
+			<tr>
+				<td>Schadens-Codes</td>
+				<td><input type="checkbox" id="ViewDamageCodes" name="ViewDamageCodes" /></td>
+				<td><input type="checkbox" id="EditDamageCodes" name="EditDamageCodes" /></td>
+				<td><input type="checkbox" id="AddDamageCodes" name="AddDamageCodes" /></td>
+				<td><input type="checkbox" id="DeleteDamageCodes" name="DeleteDamageCodes" /></td>
+			</tr>
+			<tr>
+				<td>Benutzer</td>
+				<td><input type="checkbox" id="ViewUsers" name="ViewUsers" /></td>
+				<td><input type="checkbox" id="EditUsers" name="EditUsers" /></td>
+				<td><input type="checkbox" id="AddUsers" name="AddUsers" /></td>
+				<td><input type="checkbox" id="DeleteUsers" name="DeleteUsers" /></td>
+			</tr>
+			<tr>
+				<td>Berechtigungen</td>
+				<td><input type="checkbox" id="ViewUserRights" name="ViewUserRights" /></td>
+				<td><input type="checkbox" id="EditUserRights" name="EditUserRights" /></td>
+				<td><input type="checkbox" id="AddUserRights" name="AddUserRights" /></td>
+				<td><input type="checkbox" id="DeleteUserRights" name="DeleteUserRights" /></td>
+			</tr>
+			<tr>
+				<td><button type="submit">Übernehmen</button></td>
+			</tr>
+		</tbody>
+	</table>
+</form>
+{% endblock %}
+
+{% block script %}
+<script>
+	{% for right in user.rights %}
+	document.getElementById('{{ right.display }}').checked = 'checked';
+	{% endfor %}
+</script>
+{% endblock %}

@@ -56,17 +56,42 @@ class UserContext:
 			logging.info(f"closing connection to '{self.db_path}'.")
 			self.connection.close()
 
-	# Not tested yet
-	def add_user(self, name) -> User:
-		statement = "INSERT INTO Users (Name) VALUES('?');"
+	def add_user(self, name, display) -> User:
+		user = self.get_user_by_name(name)
+		if user == None:		
+			statement = "INSERT INTO Users (Name, Display) VALUES(?, ?)"
 
-		with self.__get_connection__() as con:
-			cur = con.execute(statement, (name,))
+			con = self.__get_connection__()
+			cur = con.execute(statement, (name, display,))
 
 			if cur.rowcount != 1:
 				raise ValueError(f"Expected one row to be added but was {cur.rowcount}")
 
-		return self.get_user_by_name(self, name)
+			self.connection.commit()
+
+			user = self.get_user_by_name(name)
+
+		return user
+
+	def delete_user(self, id) -> bool:
+		statement = "DELETE FROM Users WHERE Id == ?"
+
+		con = self.__get_connection__()
+		cur = con.execute(statement, (id,))
+
+		self.connection.commit()
+
+		return cur.rowcount == 1
+
+	def update_user(self, id, name, display) -> bool:
+		statement = "UPDATE Users SET Name = ?, Display = ? WHERE Id == ?"
+
+		con = self.__get_connection__()
+		cur = con.execute(statement, (name, display, id))
+
+		self.connection.commit()
+
+		return cur.rowcount == 1
 
 	def get_access_rights(self):
 		con = self.__get_connection__()
@@ -88,15 +113,27 @@ class UserContext:
 			if not master.has_right(right.display):
 				self.add_user_right(master.id, right.id)
 
-
 	def add_user_right(self, user_id, right_id):
 		statement = "INSERT INTO UserRights (UserId, RightId) VALUES (?, ?)"
 
-		with self.__get_connection__() as con:
-			cur = con.execute(statement, (user_id, right_id,))
+		con = self.__get_connection__()
+		cur = con.execute(statement, (user_id, right_id,))
 
-			if cur.rowcount != 1:
-				raise ValueError(f"Expected one row to change but was {cur.rowcount}")
+		if cur.rowcount != 1:
+			raise ValueError(f"Expected one row to change but was {cur.rowcount}")
+
+		self.connection.commit()
+
+	def delete_user_right(self, user_id, right_id):
+		statement = "DELETE FROM UserRights WHERE UserId = ? AND RightId = ?"
+
+		con = self.__get_connection__()
+		cur = con.execute(statement, (user_id, right_id,))
+
+		if cur.rowcount != 1:
+			raise ValueError(f"Expected one row to change but was {cur.rowcount}")
+
+		self.connection.commit()
 
 	def get_user_by_id(self, id) -> User:
 		return self.get_single_user_where(f"{USER_PROPS.USER_ID} == {id}")
@@ -107,7 +144,7 @@ class UserContext:
 	def get_single_user_where(self, predicate) -> User:
 		user_list = self.get_users_where(predicate)
 
-		user = next(user_list)
+		user = next(user_list, None)
 
 		if next(user_list, None) != None:
 			raise ValueError(f"get_users_where('{predicate}') returned multiple results.")
@@ -117,7 +154,6 @@ class UserContext:
 	def get_users_where(self, predicate):
 		con = self.__get_connection__()
 		cur = con.cursor()
-		user_list = []
 		user = None
 		rights = []
 		last_id = None
@@ -166,19 +202,19 @@ class UserContext:
 
 		statement = "UPDATE Users SET PasswordHash = ? WHERE Id = ?;"
 
-		with self.__get_connection__() as con:
-			cur = con.execute(statement, (pwd_hash, user.id,))
+		con = self.__get_connection__()
+		cur = con.execute(statement, (pwd_hash, user.id,))
 
-			if cur.rowcount != 1:
-				raise ValueError(f"Expected one row to change but was {cur.rowcount}")
+		if cur.rowcount != 1:
+			raise ValueError(f"Expected one row to change but was {cur.rowcount}")
 
-			# for tests, check if password change is propagated to db
-			statement = "SELECT PasswordHash FROM Users WHERE Id = ? AND PasswordHash = ?;"
-			cur = con.execute(statement, (user.id, pwd_hash,))
-			check_hash_row = cur.fetchone()
-			if check_hash_row["PasswordHash"] != pwd_hash:
-				raise ValueError("Failed to update password hash.")
-			#con.commit()
+		# for tests, check if password change is propagated to db
+		statement = "SELECT PasswordHash FROM Users WHERE Id = ? AND PasswordHash = ?;"
+		cur = con.execute(statement, (user.id, pwd_hash,))
+		check_hash_row = cur.fetchone()
+		if check_hash_row["PasswordHash"] != pwd_hash:
+			raise ValueError("Failed to update password hash.")
+		#con.commit()
 
 	def __get_connection__(self):
 		if self.connection == None:
