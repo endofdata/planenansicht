@@ -122,6 +122,9 @@ class TarpsContext:
 
 		if selection != None:
 			statement += selection.to_sql()
+			selected_numbers = selection.selected_numbers
+		else:
+			selected_numbers = []
 
 		for row in cur.execute(statement):
 
@@ -130,6 +133,7 @@ class TarpsContext:
 				last_id = tarp_id
 				if tarp != None:
 					tarp.damages = damages
+					tarp.is_selected = tarp.number in selected_numbers
 					tarp_list.append(tarp)
 					damages = []
 
@@ -143,9 +147,11 @@ class TarpsContext:
 
 		if tarp != None:
 			tarp.damages = damages
+			tarp.is_selected = tarp.number in selected_numbers
 			tarp_list.append(tarp)
 
 		return tarp_list
+
 
 	def is_pattern_property(self, property):
 		if property == "None":

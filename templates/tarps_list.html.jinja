@@ -51,6 +51,16 @@
 					</td>
 				</tr>
 				{% endfor %}
+				<tr>
+					<th></th>
+					<th>Auswahl</th>
+				</tr>
+				<tr>
+					<td/>
+					<td>
+						<input id="selected_numbers" name="selected_numbers" value="{{ selection.get_selected_numbers() }}" />
+					</td>
+				</tr>
 				<tr class="buttonpanel">
 					<td><button type="submit">Aktualisieren</button></td>
 				</tr>
@@ -61,6 +71,7 @@
 <table class="zebra-list">
 	<thead>
 		<tr>
+			<th></th>
 			<th class="numeric">Nr.</th>
 			<th>Typ</th>
 			<th>Kat.</th>
@@ -71,6 +82,14 @@
 	<tbody>
 		{% for tarp in tarp_list %}
 		<tr>
+			<td>
+				<span>Selected: {{ tarp.is_selected }}</span>
+				{% if tarp.is_selected == True %}
+				<input type="checkbox" id="tarp_selected" name="tarp_selected" checked="checked"/>
+				{% else %}
+				<input type="checkbox" id="tarp_selected" name="tarp_selected"/>
+				{% endif %}
+			</td>
 			<td class="numeric">{{ tarp.number }}</td>
 			<td>{{ tarp.category.tarp_type.name }}</td>
 			<td>{{ tarp.category.name }}</td>

@@ -84,7 +84,7 @@ class Selection:
 
 	The selection can be formatted as partial SQL statement by calling the to_sql() method.
 	"""
-	def __init__(self, selectors, sequence):
+	def __init__(self, selectors, sequence, selected_numbers = None):
 		"""Constructor
 
 		Args:
@@ -93,6 +93,7 @@ class Selection:
 		"""
 		self.selectors = selectors
 		self.sequence = sequence
+		self.selected_numbers = selected_numbers
 
 	def has_selectors(self):
 		"""Checks if the selectors list contains valid entries
@@ -117,6 +118,11 @@ class Selection:
 				return True
 
 		return False
+
+	def get_selected_numbers(self):
+		if self.selected_numbers == None:
+			return ''
+		return ", ".join([str(x) for x in self.selected_numbers])
 
 	def to_sql(self):
 		"""Creates a partial SQL statement with optional WHERE and ORDER BY clauses

@@ -14,6 +14,7 @@ from request_context import RequestContext, _request_context
 from werkzeug.local import LocalProxy
 import logging
 from sys import exc_info
+from ssl import create_default_context, Purpose
 
 # TODO: Move to separate source
 def authorize_user(request_context, access):
@@ -38,6 +39,7 @@ env.log()
 request_context = LocalProxy(_request_context)
 
 app = Flask(__name__)
+app.config['TEMPLATES_AUTO_RELOAD'] = True
 app.secret_key = env.get_secret_key()
 app.register_blueprint(authentication_api)
 app.register_blueprint(user_api)
@@ -46,9 +48,20 @@ app.register_blueprint(admin_api)
 register_policy(AuthorizationPolicy("user", [ authorize_user]))
 register_policy(AuthorizationPolicy("guest", [lambda context: AuthorizationResult.ALLOW]))
 
+#------------------------------------------------------------------------------------------------------------------------------
+# Not called when running flask
+#------------------------------------------------------------------------------------------------------------------------------
 if __name__ == '__main__':
-	app.run(use_debugger=False, use_reloader=False, passthrough_errors=True)
+	ssl_ctx = create_default_context(Purpose.CLIENT_AUTH)	
+	ssl_ctx.load_cert_chain('cert/Oskar.cer', keyfile='cert/Oskar.key', password=env.get_secret_key())
 
+	app.run(
+		use_debugger=False, 
+		use_reloader=False, 
+		passthrough_errors=True,
+		ssl_context=ssl_ctx)
+#------------------------------------------------------------------------------------------------------------------------------
+	
 @app.before_request
 def app_before_request():
 	_request_context.set(RequestContext())
@@ -106,10 +119,20 @@ def list_tarp_by():
 		else:
 			sequence.append(Order())
 
-	selection = Selection(selectors, sequence)		
+	selected_tarps = request.form["selected_numbers"]
+
+	if selected_tarps != None:
+		selected_numbers = [int(x) for x in selected_tarps.split(',')]
+	else:
+		selected_numbers = None
+
+	selection = Selection(selectors, sequence, selected_numbers)		
 	tarp_list = db_context.select(selection)
-		
+
 	return render_tarp_list(tarp_list, selection)
 
 def render_tarp_list(tarp_list, selection):
 	return request_context.view_result("tarps_list.html.jinja", tarp_list=tarp_list, selection=selection, TARPS_PROPS=TARPS_PROPS)
+
+
+	
