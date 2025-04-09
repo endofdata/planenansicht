@@ -1,4 +1,4 @@
-from os import getenv, getcwd
+from os import getenv, environ, getcwd
 from os import path
 import logging
 import secrets
@@ -17,10 +17,11 @@ class Environment:
 		logging.info(f"Number of filter selectors: {self.max_selectors}")
 		logging.info(f"Number of sorting criteria: {self.max_orders}")
 
-	def get_secret_key(self):
+	def get_secret_key(self, allow_create = False):
 		key = getenv("TARPS_SECRET_KEY", None)
-		if key == None:
+		if (key == None) and (allow_create == True):
 			key = secrets.token_hex()
+			environ["TARPS_SECRET_KEY"] = key
 		return key
 
 	def init_logging(self):
