@@ -13,6 +13,10 @@ from routing import *
 from request_context import RequestContext, _request_context
 from werkzeug.local import LocalProxy
 import logging
+import click
+from click import Context
+from flask.cli import run_command
+from typing import Optional, Any
 from sys import exc_info
 from ssl import create_default_context, Purpose
 
@@ -22,13 +26,13 @@ def authorize_user(request_context, access):
 
 	if usr == None:
 		return AuthorizationResult.FORBIDDEN
-	
+
 	if (access != None) and (usr.has_right(access)):
 			return AuthorizationResult.ALLOW
 
 	return AuthorizationResult.NONE
 
-# Debug helper: if you want to create a new password 
+# Debug helper: if you want to create a new password
 # usr = User(0, "Master", "The master of desaster", None, None)
 # pwd = usr.encrypt_pwd("master")
 # is_valid = usr.check_pwd("master")
@@ -52,16 +56,44 @@ register_policy(AuthorizationPolicy("guest", [lambda context: AuthorizationResul
 # Not called when running flask
 #------------------------------------------------------------------------------------------------------------------------------
 if __name__ == '__main__':
-	ssl_ctx = create_default_context(Purpose.CLIENT_AUTH)	
-	ssl_ctx.load_cert_chain('cert/Oskar.cer', keyfile='cert/Oskar.key', password=env.get_secret_key())
-
-	app.run(
-		use_debugger=False, 
-		use_reloader=False, 
-		passthrough_errors=True,
-		ssl_context=ssl_ctx)
+	pass
 #------------------------------------------------------------------------------------------------------------------------------
-	
+
+
+# While the click documentation does not recommend to forward commands, it does not name
+# an alternative to it. But when --cert and --key are just forwarded to the Werkzeug stack
+# where creation of the SSL/TLS context asks for a PEM password in the terminal. So, forwarding
+# to the run_command after creating the SSL/TLS is currently the only known option.
+# Note that the run_command supports some more parameters
+@app.cli.command("run_ssl", context_settings=dict(ignore_unknown_options=True, allow_extra_args=True))
+@click.option("--host", "-h", default="127.0.0.1", help="The interface to bind to.")
+@click.option("--port", "-p", default=5000, help="The port to bind to.")
+@click.option("--cert", help="Specify a certificate file to use HTTPS.")
+@click.option("--key", help="The key file to use when specifying a certificate.")
+@click.option("--debugger/--no-debugger",
+    default=None,
+    help="Enable or disable the debugger. By default the debugger "
+    "is active if debug is enabled.",
+)
+@click.pass_context
+def run_ssl_command(
+		ctx: Context,
+		host: str,
+		port: int,
+		cert: str,
+		key: str,
+        **options: Any
+    ) -> None:
+
+	ssl_ctx = create_default_context(Purpose.CLIENT_AUTH)
+	ssl_ctx.load_cert_chain(cert, key, app.secret_key)
+	ctx.params["cert"] = ssl_ctx
+	ctx.params.pop("key")
+
+	ctx.forward(run_command)
+
+
+
 @app.before_request
 def app_before_request():
 	_request_context.set(RequestContext())
@@ -94,7 +126,7 @@ def list_tarps():
 
 	empty_selection = Selection(selectors, sequence)
 	return render_tarp_list(tarp_list, empty_selection)
-	
+
 @app.route(ROOT_ENDPOINT, methods = ['POST'])
 @authorize("guest")
 def list_tarp_by():
@@ -126,13 +158,10 @@ def list_tarp_by():
 	else:
 		selected_numbers = None
 
-	selection = Selection(selectors, sequence, selected_numbers)		
+	selection = Selection(selectors, sequence, selected_numbers)
 	tarp_list = db_context.select(selection)
 
 	return render_tarp_list(tarp_list, selection)
 
 def render_tarp_list(tarp_list, selection):
 	return request_context.view_result("tarps_list.html.jinja", tarp_list=tarp_list, selection=selection, TARPS_PROPS=TARPS_PROPS)
-
-
-	
